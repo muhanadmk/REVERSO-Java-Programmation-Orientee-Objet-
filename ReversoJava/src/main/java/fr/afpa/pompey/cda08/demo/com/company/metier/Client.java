@@ -33,7 +33,7 @@ public class Client extends Societe {
         setLeNombreDemployes(leNombreDemployes);
         setLeChiffreDaffaire(leChiffreDaffaire);
     }
-
+    public Client(){}
     public double getLeChiffreDaffaire() {
         return LeChiffreDaffaire;
     }

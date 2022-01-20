@@ -36,7 +36,7 @@ public class Prospect extends Societe {
         setLaDateDeProspection(laDateDeProspection);
         setInteresse(interesse);
     }
-
+    public Prospect(){}
     public LocalDate getLaDateDeProspection() {
         return laDateDeProspection;
     }

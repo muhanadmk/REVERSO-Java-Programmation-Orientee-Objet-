@@ -34,7 +34,7 @@ public abstract class Societe {
         setCommentaries(commentaries);
         setAddress(address);
     }
-
+    public Societe(){}
     public int getId() {
         return id;
     }

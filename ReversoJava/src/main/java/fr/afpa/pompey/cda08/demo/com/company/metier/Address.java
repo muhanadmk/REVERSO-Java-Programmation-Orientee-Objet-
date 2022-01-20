@@ -28,7 +28,7 @@ public class Address {
         setNomDeRue(nomDeRue);
         setVille(ville);
     }
-
+    public Address(){}
     public String getNumeroDeRue() {
         return numeroDeRue;
     }
