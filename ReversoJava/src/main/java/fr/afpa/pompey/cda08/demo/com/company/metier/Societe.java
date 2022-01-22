@@ -1,6 +1,11 @@
 package fr.afpa.pompey.cda08.demo.com.company.metier;
 
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
+import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
+import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.*;
+import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.verifyEmail;
+import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.verifyTel;
+
 
 /**
  * le classe mere qui a tout les attribut en commun entre le client et le prospect
@@ -71,15 +76,16 @@ public abstract class Societe {
     public String getTelephone() {
         return telephone;
     }
-
     /**
      * on test si le téléphone aura moins de 10 caractères
      *
      * @param telephone
      * @throws ExceptionMetier
      */
+
+
     public void setTelephone(String telephone) throws ExceptionMetier {
-        if (telephone == null || telephone.toCharArray().length < 9) {
+        if (telephone == null || telephone.length() < 9) {
             throw new ExceptionMetier("Le téléphone devra être renseigné et avoir au moins 10 caractères");
         }
         this.telephone = telephone;
@@ -96,9 +102,12 @@ public abstract class Societe {
      * @throws ExceptionMetier
      */
     public void setAdresseMail(String adresseMail) throws ExceptionMetier {
-        if (adresseMail == null || !(adresseMail.contains("@"))) {
-            throw new ExceptionMetier("L’adresse mail devra être renseignée et avoir au moins le caractère « @ »");
+
+        if (adresseMail == null || !(verifyEmail.matcher(adresseMail).matches())) {
+            throw new ExceptionMetier("L’adresse mail devra être renseignée et avoir au moins le caractère « @ »" +
+                    "et un « . »");
         }
+
         this.adresseMail = adresseMail;
     }
 
@@ -126,6 +135,5 @@ public abstract class Societe {
                 " " + getAddress().getCodePostal() +
                 '}';
     }
-
 
 }

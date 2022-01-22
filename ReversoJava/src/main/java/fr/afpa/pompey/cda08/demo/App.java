@@ -16,29 +16,29 @@ public class App
 {
     public static void main( String[] args )throws ExceptionMetier, DataFormatException
     {
-        Client f1 = new Client("ali", "face@gmail.com", "789553598",
+        Client f1 = new Client("ali", "mouhandmk1@gmail.com", "789553598",
                 "hhhh",
                 new Address("79", "Bld de la Liberation", "54000",
                         "Lille"), 2000, 55);
-        Client f2 = new Client("hasne", "face@gmail.com", "789553598",
+        Client f2 = new Client("hasne", "mouhandmk1@gmail.com", "789553598",
                 "hhhh",
-                new Address("55", "Bld de la Liberation", "54000",
+                new Address("55", "mouhandmk1@gmail.com", "54000",
                         "nancy"), 222, 55);
-        Client f3 = new Client("ahmed", "face@gmail.com", "7895553598",
+        Client f3 = new Client("ahmed", "mouhandmk1@gmail.com", "7895553598",
                 "hhhh",
-                new Address("55", "Bld de la Liberation", "54000",
+                new Address("55", "mouhandmk1@gmail.com", "54000",
                         "Lill"), 400, 55);
 
-        Prospect g1 = new Prospect("Prospect 1", "face@gmail.com", "7895553598",
+        Prospect g1 = new Prospect("Prospect 1", "mouhandmk1@gmail.com", "7895553598",
                 "hhhh",
                 new Address("79", "Bld de la Liberation", "54000",
                         "Lille"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.NON);
-        Prospect g22 = new Prospect("Prospect 22", "face@gmail.com", "7895553598",
+        Prospect g22 = new Prospect("Prospect 22", "mouhandmk1@gmail.com", "7895553598",
                 "hhhh",
                 new Address("55", "Bld de la Liberation", "54000",
                         "Lill"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.OUI);
 
-        Prospect g3 = new Prospect("Prospect 3", "face@gmail.com", "789553598",
+        Prospect g3 = new Prospect("Prospect 3", "mouhandmk1@gmail.com", "789553598",
                 "hhhh",
                 new Address("55", "Bld de la Liberation", "54000",
                         "Lill"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.NON);
