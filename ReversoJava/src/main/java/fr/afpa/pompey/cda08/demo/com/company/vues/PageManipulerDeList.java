@@ -142,6 +142,7 @@ public class PageManipulerDeList extends JFrame {
                     } catch (Exception exception) {
                         err = false;
                         messageErr("message Err !!", "err System essyeer puls tard");
+                        Utilitaire.logger.fatal("err on ne pas prevu");
                         System.exit(1);
                     }
                 } else {
@@ -161,6 +162,7 @@ public class PageManipulerDeList extends JFrame {
                     } catch (Exception exception) {
                         err = false;
                         messageErr("message Err !!", "err System essyeer puls tard");
+                        Utilitaire.logger.fatal("err on ne pas prevu");
                         System.exit(1);
                     }
                 }

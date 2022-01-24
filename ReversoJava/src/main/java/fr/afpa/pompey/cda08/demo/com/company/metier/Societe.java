@@ -1,10 +1,7 @@
 package fr.afpa.pompey.cda08.demo.com.company.metier;
 
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
-import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
-import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.*;
 import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.verifyEmail;
-import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.verifyTel;
 
 
 /**

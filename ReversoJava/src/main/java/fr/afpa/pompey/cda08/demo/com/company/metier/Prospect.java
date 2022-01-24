@@ -3,6 +3,7 @@ package fr.afpa.pompey.cda08.demo.com.company.metier;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
+import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 
 import java.time.LocalDate;
 
@@ -35,6 +36,7 @@ public class Prospect extends Societe {
         this.id = idProspect;
         setLaDateDeProspection(laDateDeProspection);
         setInteresse(interesse);
+        Utilitaire.logger.info("cree Client");
     }
     public Prospect(){}
     public LocalDate getLaDateDeProspection() {

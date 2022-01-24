@@ -1,6 +1,7 @@
 package fr.afpa.pompey.cda08.demo.com.company.metier;
 
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
+import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 
 
 /**
@@ -32,6 +33,7 @@ public class Client extends Societe {
         this.id = idClient;
         setLeNombreDemployes(leNombreDemployes);
         setLeChiffreDaffaire(leChiffreDaffaire);
+        Utilitaire.logger.info("cree Client");
     }
     public Client(){}
     public double getLeChiffreDaffaire() {
