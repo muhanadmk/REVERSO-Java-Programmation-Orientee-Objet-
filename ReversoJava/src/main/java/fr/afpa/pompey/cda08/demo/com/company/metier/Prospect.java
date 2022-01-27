@@ -4,6 +4,8 @@ import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
@@ -13,8 +15,9 @@ import java.time.LocalDate;
 public class Prospect extends Societe {
 
     private LocalDate laDateDeProspection;
-    private static int idProspect;
     private ChoixUtilisateur.chioxInteresser interesse;
+    private static final Logger LOGGER = LogManager.getLogger(Prospect.class.getName());
+
 
     /**
      * constructeur de la classe qui va avoir le constructeur de la classe mère de société en plus leurs attribus
@@ -28,15 +31,13 @@ public class Prospect extends Societe {
      * @param interesse
      * @throws ExceptionMetier
      */
-    public Prospect(String sociale, String adresseMail, String telephone, String commentaries,
+    public Prospect(int id,String sociale, String adresseMail, String telephone, String commentaries,
                     Address address, LocalDate laDateDeProspection, ChoixUtilisateur.chioxInteresser interesse)
             throws ExceptionMetier {
-        super(sociale, adresseMail, telephone, commentaries, address);
-        idProspect++;
-        this.id = idProspect;
+        super(id,sociale, adresseMail, telephone, commentaries, address);
         setLaDateDeProspection(laDateDeProspection);
         setInteresse(interesse);
-        Utilitaire.logger.info("cree Client");
+        LOGGER.info("cree Client");
     }
     public Prospect(){}
     public LocalDate getLaDateDeProspection() {

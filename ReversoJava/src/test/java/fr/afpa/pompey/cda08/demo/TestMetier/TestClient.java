@@ -28,8 +28,14 @@ public class TestClient extends Client {
     }
     @ParameterizedTest
     @ValueSource(strings = {"mouhandmkgmail.com", "muhanamkafpacom"})
-    void testPatternMail(String mail) {
+    void testPatternMailFaux(String mail) {
         assertFalse(Utilitaire.verifyEmail.matcher(mail).matches());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"mouhandmk1@gmail.com", "mouhanad1@yahoo.com"})
+    void testPatternMailVrai(String mail) {
+        assertTrue(Utilitaire.verifyEmail.matcher(mail).matches());
     }
 
     @Test

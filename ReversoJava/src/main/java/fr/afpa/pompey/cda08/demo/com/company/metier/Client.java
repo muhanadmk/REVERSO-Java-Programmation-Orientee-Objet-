@@ -2,6 +2,8 @@ package fr.afpa.pompey.cda08.demo.com.company.metier;
 
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -10,9 +12,10 @@ import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 
 public class Client extends Societe {
 
-    private static int idClient;
     private double LeChiffreDaffaire;
     private long LeNombreDemployes;
+    private static final Logger LOGGER = LogManager.getLogger(Client.class.getName());
+
 
     /**
      * constructeur de la classe qui va avoir le constructeur de la classe mère de société en plus leurs attribus
@@ -26,14 +29,12 @@ public class Client extends Societe {
      * @param leNombreDemployes
      * @throws ExceptionMetier
      */
-    public Client(String sociale, String adresseMail, String telephone, String commentaries,
+    public Client(int id ,String sociale, String adresseMail, String telephone, String commentaries,
                   Address address, double leChiffreDaffaire, long leNombreDemployes) throws ExceptionMetier {
-        super(sociale, adresseMail, telephone, commentaries, address);
-        idClient++;
-        this.id = idClient;
+        super(id,sociale, adresseMail, telephone, commentaries, address);
         setLeNombreDemployes(leNombreDemployes);
         setLeChiffreDaffaire(leChiffreDaffaire);
-        Utilitaire.logger.info("cree Client");
+        LOGGER.info("cree Client");
     }
     public Client(){}
     public double getLeChiffreDaffaire() {
@@ -70,9 +71,6 @@ public class Client extends Societe {
         this.LeNombreDemployes = leNombreDemployes;
     }
 
-    public int getIdClient() {
-        return idClient;
-    }
 
     @Override
     public String toString() {

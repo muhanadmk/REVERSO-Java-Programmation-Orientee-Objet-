@@ -28,14 +28,20 @@ public abstract class Societe {
      * @throws ExceptionMetier
      */
     // constructeur de le classe mere qui va a
-    public Societe(String sociale, String adresseMail, String telephone, String commentaries, Address address)
+    public Societe(int id,String sociale, String adresseMail, String telephone, String commentaries, Address address)
             throws ExceptionMetier {
+        setId(id);
         setSociale(sociale);
         setTelephone(telephone);
         setAdresseMail(adresseMail);
         setCommentaries(commentaries);
         setAddress(address);
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Societe(){}
     public int getId() {
         return id;

@@ -1,72 +1,67 @@
 package fr.afpa.pompey.cda08.demo;
 
 
+import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
+
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import fr.afpa.pompey.cda08.demo.com.company.vues.Accueil;
 
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.zip.DataFormatException;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )throws ExceptionMetier, DataFormatException
-    {
-      Client f1 = new Client("ali", "mouhandmk1@gmail.com", "789553598",
+
+public class App {
+    public static void main(String[] args) throws ExceptionMetier, IOException, SQLException {
+        Client gagging = new Client(0, "ttttt", "mouhandmk1@gmail.com", "789553598",
                 "hhhh",
                 new Address("79", "Bld de la Liberation", "54000",
                         "Lille"), 2000, 55);
-        Client f2 = new Client("hasne", "mouhandmk1@gmail.com", "789553598",
+        Client f1666 = new Client(0,"pppppppppp", "mouhandmk1@gmail.com", "789553598",
+                "hhhh",
+                new Address("79", "Bld de la Liberation", "54000",
+                        "Lille"), 2000, 55);
+        Client f2 = new Client(0,"uuu ", "mouhandmk1@gmail.com", "789553598",
                 "hhhh",
                 new Address("55", "mouhandmk1@gmail.com", "54000",
                         "nancy"), 222, 55);
-        Client f3 = new Client("ahmed", "mouhandmk1@gmail.com", "7895553598",
+        Client f3 = new Client(0,"ahmed", "mouhandmk1@gmail.com", "7895553598",
                 "hhhh",
                 new Address("55", "mouhandmk1@gmail.com", "54000",
                         "Lill"), 400, 55);
 
-        Prospect g1 = new Prospect("Prospect 1", "mouhandmk1@gmail.com", "7895553598",
+        Prospect g1 = new Prospect(0,"Prospect 111", "mouhandmk1@gmail.com", "555566976876876",
                 "hhhh",
                 new Address("79", "Bld de la Liberation", "54000",
                         "Lille"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.NON);
-        Prospect g22 = new Prospect("Prospect 22", "mouhandmk1@gmail.com", "7895553598",
+        Prospect g22 = new Prospect(0,"Prospect 22", "mouhandmk1@gmail.com", "789555553598",
                 "hhhh",
                 new Address("55", "Bld de la Liberation", "54000",
                         "Lill"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.OUI);
 
-        Prospect g3 = new Prospect("Prospect 3", "mouhandmk1@gmail.com", "789553598",
+        Prospect g3 = new Prospect(0, "Prospect 9999999", "mouhandmk1@gmail.com", "78955553598",
                 "hhhh",
                 new Address("55", "Bld de la Liberation", "54000",
                         "Lill"), Utilitaire.dateInput("02/09/2011"), ChoixUtilisateur.chioxInteresser.NON);
-        ListClient.getListClient().add(f1);
-        ListClient.getListClient().add(f2);
-        ListClient.getListClient().add(f3);
-        ListeProspect.getListProspect().add(g1);
-        ListeProspect.getListProspect().add(g22);
-        ListeProspect.getListProspect().add(g3);
 
+       // DaoClient.delete(ConnexionManager.getConnexionBD(), 5);
         Accueil accueil = new Accueil();
         accueil.setVisible(true);
-        /*System.out.println("\n test logger");
+        //g3.setId(5);
+        //DaoProspect.save(ConnexionManager.getConnexionBD(), g3);
+     /*   DaoProspect.delete(ConnexionManager.getConnexionBD(), 6);
+        System.out.println(DaoProspect.getListProspect());*/
 
-        Utilitaire.logger.debug("Debug Message Logged !!!");
-        Utilitaire.logger.info("Info Message Logged !!!")*/;
-
-       /* Utilitaire.logger.info("111 on info");
-        Utilitaire.logger.error("111 on error");
-        Utilitaire.logger.warn("111 on warn");
-        Utilitaire.logger.fatal("111 on fatal");
-        Utilitaire.logger.debug("Debug Message Logged !!!");
-        Utilitaire logger.info("Info Message Logged !!!");
-        Utilitaire.logger.error("Error Message Logged !!!", new NullPointerException("NullError"));*/
-
-        System.out.println( "\n Hello World!" );
-
+        //Utilitaire.dateInput("2022-01-02");
+/*
+      System.out.println(DaoClient.getListClient().get(0));
+        System.out.println(DaoClient.getListClient().get(1));
+        System.out.println(DaoClient.getListClient().get(2));*/
     }
 }

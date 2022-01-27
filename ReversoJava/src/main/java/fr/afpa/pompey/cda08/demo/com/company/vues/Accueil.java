@@ -1,13 +1,18 @@
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
+import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoSqlEx;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
-import fr.afpa.pompey.cda08.demo.com.company.metier.ListClient;
-import fr.afpa.pompey.cda08.demo.com.company.metier.ListeProspect;
+import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -32,12 +37,21 @@ public class Accueil extends JFrame {
     private JButton homeButton;
     private boolean flageClient = false;
     private boolean condtionAficheEdit = false;
-
+    private Accueil accueilFreme;
     /**
      * constructeur classe d'accueil sur lequel on définit les mêmes on veut
      */
     public Accueil() {
+        accueilFreme = this;
 
+        // call onCancel() on ESCAPE
+        try {
+            getListeFromDB();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         setContentPane(contentPane);
         //définir la taille de l'app
         setSize(800, 600);
@@ -53,8 +67,14 @@ public class Accueil extends JFrame {
                 gestionDesProspectsButton1.setVisible(false);
                 manipulerSection.setVisible(true);
                 flageClient = true;
-                rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect.Client);
                 choixclientsOuProspects = "Clients";
+                try {
+                    rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect.Client);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -68,7 +88,13 @@ public class Accueil extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 gestionDesClientsButton.setVisible(false);
                 manipulerSection.setVisible(true);
-                rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect.PROSPECT);
+                try {
+                    rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect.PROSPECT);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 choixclientsOuProspects = "PROSPECTS";
             }
         });
@@ -96,10 +122,11 @@ public class Accueil extends JFrame {
         creationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                onCancel();
                 PageManipulerDeList pageManipulerDeList = new PageManipulerDeList(flageClient,
-                        ChoixUtilisateur.choix.CREATION, 0);
+                        ChoixUtilisateur.choix.CREATION, 0,0);
                 pageManipulerDeList.setVisible(true);
-                dispose();
+
             }
         });
         /**
@@ -115,15 +142,19 @@ public class Accueil extends JFrame {
                 listAficha.setVisible(true);
                 try {
                     if (condtionAficheEdit) {
+                        System.out.println("MODIFIER getSelectedIndex() " + listAficha.getSelectedIndex());
+                        Client client2 = (Client) DaoClient.getListClient().get(listAficha.getSelectedIndex());
+                        System.out.println( "MODIFIER client2.getId() = " +client2.getId());
                         PageManipulerDeList pageManipulerDeList = new PageManipulerDeList(flageClient,
-                                ChoixUtilisateur.choix.MODIFIER, listAficha.getSelectedIndex());
+                                ChoixUtilisateur.choix.MODIFIER, listAficha.getSelectedIndex() ,client2.getId());
                         pageManipulerDeList.setVisible(true);
-                        dispose();
+                        onCancel();
                     }
                     condtionAficheEdit = true;
                 } catch (IndexOutOfBoundsException errIndex) {
                     listAficha.removeAllItems();
                     listAficha.setVisible(false);
+                    errIndex.printStackTrace();
                     messageErr("message Err !!", "vous avez pas société a les manipulers" +
                             "vous povez");
                 }
@@ -142,15 +173,19 @@ public class Accueil extends JFrame {
                 listAficha.setVisible(true);
                 try {
                     if (condtionAficheEdit) {
+                        System.out.println("SUPRIMER getSelectedIndex() " + listAficha.getSelectedIndex());
+                        Client client2 = (Client) DaoClient.getListClient().get(listAficha.getSelectedIndex());
+                        System.out.println( "SUPRIMER client2.getId() = " +client2.getId());
                         PageManipulerDeList pageManipulerDeList = new PageManipulerDeList(flageClient,
-                                ChoixUtilisateur.choix.SUPRIMER, listAficha.getSelectedIndex());
+                                ChoixUtilisateur.choix.SUPRIMER,listAficha.getSelectedIndex(), client2.getId());
                         pageManipulerDeList.setVisible(true);
-                        dispose();
+                        onCancel();
                     }
                     condtionAficheEdit = true;
                 } catch (IndexOutOfBoundsException errIndex) {
                     listAficha.removeAllItems();
                     listAficha.setVisible(false);
+                    errIndex.printStackTrace();
                     messageErr("message Err !!", "vous avez pas société a les manipulers");
                 }
             }
@@ -165,20 +200,27 @@ public class Accueil extends JFrame {
         affichageeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listAficha.getItemCount() != 0) {
-                    dispose();
-                    Affichage affichage = new Affichage(flageClient);
-                    affichage.setVisible(true);
-                } else {
+                // if (listAficha.getItemCount() != 0) {
+                Affichage affichage = null;
+                try {
+                    affichage = new Affichage(flageClient);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                affichage.setVisible(true);
+                dispose();
+               /* } else {
                     messageErr("message Err !!", "vous avez pas " + choixclientsOuProspects + " " +
                             "a les afficher");
-                }
+               }*/
             }
         });
         sortirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(2);
+                System.exit(0);
             }
         });
     }
@@ -190,7 +232,7 @@ public class Accueil extends JFrame {
      */
     private void retourAlacuile(ExceptionMetier exception) {
         messageErr("Msg Eerr", exception.getMessage());
-        dispose();
+        onCancel();
         Accueil accueil = new Accueil();
         accueil.setVisible(true);
         accueil.getListAficha().setVisible(false);
@@ -209,15 +251,16 @@ public class Accueil extends JFrame {
                 titleBox, JOptionPane.DEFAULT_OPTION);
     }
 
-    private ArrayList getListPourEdit(ChoixUtilisateur.choixClientOuProcpect chixClintOuprospet) {
+    private ArrayList getListPourEdit(ChoixUtilisateur.choixClientOuProcpect chixClintOuprospet)
+            throws IOException, SQLException {
         if (chixClintOuprospet.toString().equals("Client")) {
-            return ListClient.getListClient();
+            return DaoClient.getListClient();
         }
-        return ListeProspect.getListProspect();
+        return DaoProspect.getListProspect();
     }
 
-    private void rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect chixClintOuprospet) {
-        if (listAficha != null || listAficha.getItemCount() == 0) {
+    private void rempilerComboBox(ChoixUtilisateur.choixClientOuProcpect chixClintOuprospet) throws SQLException, IOException {
+        if (listAficha == null || listAficha.getItemCount() == 0) {
             for (int i = 0; i < getListPourEdit(chixClintOuprospet).size(); i++) {
                 Societe societe = (Societe) getListPourEdit(chixClintOuprospet).get(i);
                 listAficha.addItem(societe.getSociale());
@@ -229,4 +272,20 @@ public class Accueil extends JFrame {
         return listAficha;
     }
 
+    private void getListeFromDB() throws IOException, SQLException {
+        try {
+            if (DaoClient.getListClient().size() == 0) {
+                DaoClient.findAll(ConnexionManager.getConnexionBD());
+            }
+            if (DaoProspect.getListProspect().size() == 0) {
+                DaoProspect.findAll(ConnexionManager.getConnexionBD());
+            }
+        }catch (DaoSqlEx daoSqlEx){
+            messageErr("ERR basse de donnes", daoSqlEx.getMessage());
+        }
+    }
+    private void onCancel() {
+        dispose();
+        System.exit(0);
+    }
 }

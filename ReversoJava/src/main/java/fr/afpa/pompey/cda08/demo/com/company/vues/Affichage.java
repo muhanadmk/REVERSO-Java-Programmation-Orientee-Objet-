@@ -1,5 +1,8 @@
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
+import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 
@@ -8,6 +11,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +33,8 @@ public class Affichage extends JFrame {
      * @param flageClient
      * @throws ExceptionMetier
      */
-    public Affichage(Boolean flageClient) {
+    public Affichage(Boolean flageClient) throws IOException, SQLException {
+
         //définir la taille de l'app
         setSize(800, 600);
         setContentPane(contentPane);
@@ -99,23 +106,22 @@ public class Affichage extends JFrame {
         sortirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(2);
+                System.exit(0);
             }
         });
+
     }
 
-    /**
-     * on récupère la liste solon le choix de user
-     *
-     * @param flageClient
-     * @return
-     */
-    private ArrayList getListAfichge(Boolean flageClient) {
+
+    private ArrayList getListAfichge(Boolean flageClient) throws IOException, SQLException {
         if (flageClient) {
-            return ListClient.getListClient();
+            return DaoClient.getListClient();
         }
-        return ListeProspect.getListProspect();
+        return DaoProspect.getListProspect();
     }
-
+    /*private void onCancel() {
+        dispose();
+        System.exit(0);
+    }*/
 }
 
