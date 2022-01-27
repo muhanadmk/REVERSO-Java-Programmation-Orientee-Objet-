@@ -206,13 +206,18 @@ public class PageManipulerDeList extends JFrame {
                                 }
                                // getListPourEdit(flageClient).add(getobjectForEdit(flageClient));
                             } catch (IOException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             } catch (SQLException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             }catch (DaoSqlEx daoSqlEx){
+                                err = false;
+                                daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
                             affichageAccueilEtFermerLeEdit("vous avez bien cree");
+                            //err =true;
                         }
 
                         break;
@@ -232,13 +237,18 @@ public class PageManipulerDeList extends JFrame {
                                 }
                                // getListPourEdit(flageClient).add(getobjectForEdit(flageClient));
                             } catch (IOException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             } catch (SQLException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             }catch (DaoSqlEx daoSqlEx){
+                                err = false;
+                                daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
                             affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
+                            //err =true;
                         }
 
                         break;
@@ -257,14 +267,18 @@ public class PageManipulerDeList extends JFrame {
                                     DaoProspect.getListProspect().remove(prospect);
                                 }
 
-                               // getListPourEdit(flageClient).add(client1.getId());
                             } catch (IOException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             } catch (SQLException ex) {
+                                err = false;
                                 ex.printStackTrace();
                             }catch (DaoSqlEx daoSqlEx){
+                                err = false;
+                                daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
+                           // err =true;
                             applAccueil();
                         }
 
