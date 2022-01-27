@@ -230,10 +230,10 @@ public class PageManipulerDeList extends JFrame {
                                // client.setId(avoirDataClient.getId());
                                 if (flageClient){
                                     DaoClient.save(ConnexionManager.getConnexionBD(),client);
-                                    DaoClient.getListClient().add(client);
+                                    DaoClient.getListClient().set(getIndexListe,client);
                                 }else {
                                     DaoProspect.save(ConnexionManager.getConnexionBD(),prospect);
-                                    DaoProspect.getListProspect().add(prospect);
+                                    DaoProspect.getListProspect().set(getIndexListe,prospect);
                                 }
                                // getListPourEdit(flageClient).add(getobjectForEdit(flageClient));
                             } catch (IOException ex) {
@@ -261,10 +261,10 @@ public class PageManipulerDeList extends JFrame {
                             try {
                                 if (flageClient){
                                     DaoClient.delete(ConnexionManager.getConnexionBD(),IdSociete);
-                                    DaoClient.getListClient().remove(client);
+                                    DaoClient.getListClient().remove(getIndexListe);
                                 }else {
                                     DaoProspect.delete(ConnexionManager.getConnexionBD(),IdSociete);
-                                    DaoProspect.getListProspect().remove(prospect);
+                                    DaoProspect.getListProspect().remove(getIndexListe);
                                 }
 
                             } catch (IOException ex) {
