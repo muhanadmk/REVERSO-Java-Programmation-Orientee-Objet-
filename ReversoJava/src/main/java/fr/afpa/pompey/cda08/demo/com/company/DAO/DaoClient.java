@@ -3,7 +3,6 @@ package fr.afpa.pompey.cda08.demo.com.company.DAO;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,7 +89,8 @@ public class DaoClient {
         }
     }
 
-    public static void save(Connection con, Client Upclient) throws SQLException {
+    public static int save(Connection con, Client Upclient) throws SQLException {
+        int id = 0;
         Statement stmt = null;
         PreparedStatement preparedStmt = null;
         String query = null;
@@ -101,8 +101,8 @@ public class DaoClient {
             query = "UPDATE clients SET name_Client= ?,telephone= ?,adresseMail=?,address=? ,commentarie=?,Nombre_demployes=?,Chiffre_daffaire=?  WHERE  Id_cliente = ?";
         }
         try {
-            con.setAutoCommit(false);
-            preparedStmt = con.prepareStatement(query);
+            preparedStmt = con.prepareStatement(query,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStmt.setString(1, Upclient.getSociale());
             preparedStmt.setString(2, Upclient.getTelephone());
             preparedStmt.setString(3, Upclient.getAdresseMail());
@@ -112,29 +112,26 @@ public class DaoClient {
             preparedStmt.setString(5, Upclient.getCommentaries());
             preparedStmt.setLong(6, Upclient.getLeNombreDemployes());
             preparedStmt.setDouble(7, Upclient.getLeChiffreDaffaire());
-            //preparedStmt.setInt(8, 1);
+
            if (Upclient.getId() > 0 ) {
                 preparedStmt.setInt(8, Upclient.getId());
             }
             preparedStmt.executeUpdate();
-            System.out.println("preparedStmt.executeUpdate();");
+            ResultSet resultSet =preparedStmt.getGeneratedKeys();
+            if(resultSet.next()){
+                id =resultSet.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
             if (preparedStmt != null) {
                 preparedStmt.close();
             }
-            if (preparedStmt != null) {
-                preparedStmt.close();
-            }
-            con.setAutoCommit(true);
-        }
-
-        /*finally {
             if (stmt != null) {
                 stmt.close();
             }
-        }*/
+        }
+        return id;
     }
 
     public static void delete(Connection con, int IdClient) throws SQLException {

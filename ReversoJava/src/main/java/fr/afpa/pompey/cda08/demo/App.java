@@ -56,7 +56,7 @@ public class App {
         accueil.setVisible(true);
 
         //g3.setId(5);
-     /*   DaoProspect.save(ConnexionManager.getConnexionBD(), g1);
+      /*  DaoProspect.save(ConnexionManager.getConnexionBD(), g1);
         DaoProspect.save(ConnexionManager.getConnexionBD(), g22);
         DaoProspect.save(ConnexionManager.getConnexionBD(), g3);*/
      /*   DaoProspect.delete(ConnexionManager.getConnexionBD(), 6);

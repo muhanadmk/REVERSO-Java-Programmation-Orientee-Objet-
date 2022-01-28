@@ -8,7 +8,6 @@ import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.formatter;
 
 
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 
 public class DaoProspect {
     private static Prospect prospect;
+
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static ArrayList<Prospect> listProspect = new ArrayList();
 
@@ -30,10 +30,10 @@ public class DaoProspect {
         return listProspect;
     }
 
-    public static void setProspect(int id, String sociale, String adresseMail, String telephone, String commentaries,
-                                   String numeroDeRue, String codePostal, String nomDeRue, String ville,
-                                   String laDateDeProspection, ChoixUtilisateur.chioxInteresser interesse) throws ExceptionMetier {
-        prospect = new Prospect(id, sociale, adresseMail, telephone,
+    public static void setProspect(int id,String sociale, String adresseMail, String telephone, String commentaries,
+                                 String numeroDeRue, String codePostal, String nomDeRue, String ville,
+                                 String laDateDeProspection, ChoixUtilisateur.chioxInteresser interesse) throws ExceptionMetier {
+        prospect = new Prospect(id,sociale, adresseMail, telephone,
                 commentaries,
                 new Address(numeroDeRue, nomDeRue, codePostal,
                         ville), Utilitaire.dateInput(laDateDeProspection), interesse);
@@ -58,14 +58,14 @@ public class DaoProspect {
                 String commentarie = rs.getString("commentarie");
                 LocalDate DateDeProspection = rs.getDate("DateDeProspection").toLocalDate();
                 byte interesse = rs.getByte("interesse");
-                ChoixUtilisateur.chioxInteresser choxInteresse = null;
-                if (interesse == 1) {
+                ChoixUtilisateur.chioxInteresser  choxInteresse = null;
+                if (interesse == 1){
                     choxInteresse = ChoixUtilisateur.chioxInteresser.OUI;
-                } else {
+                }else {
                     choxInteresse = ChoixUtilisateur.chioxInteresser.NON;
                 }
 
-                setProspect(id_prospect, name_prospect, adresseMail, telephone, commentarie, address, address, address, address,
+                setProspect(id_prospect,name_prospect, adresseMail, telephone, commentarie, address, address, address, address,
                         DateDeProspection.format(formatter), choxInteresse);
                 listProspect.add(prospect);
             }
@@ -94,14 +94,14 @@ public class DaoProspect {
                 String commentarie = rs.getString("commentarie");
                 LocalDate DateDeProspection = rs.getDate("DateDeProspection").toLocalDate();
                 byte interesse = rs.getByte("interesse");
-                ChoixUtilisateur.chioxInteresser choxInteresse = null;
-                if (interesse == 1) {
+                ChoixUtilisateur.chioxInteresser  choxInteresse = null;
+                if (interesse == 1){
                     choxInteresse = ChoixUtilisateur.chioxInteresser.OUI;
-                } else {
+                }else {
                     choxInteresse = ChoixUtilisateur.chioxInteresser.NON;
                 }
 
-                setProspect(id_prospect, name_prospect, adresseMail, telephone, commentarie, address, address, address, address,
+                setProspect(id_prospect,name_prospect, adresseMail, telephone, commentarie, address, address, address, address,
                         DateDeProspection.format(formatter), choxInteresse);
                 listProspect.add(prospect);
             }
@@ -114,16 +114,18 @@ public class DaoProspect {
         }
     }
 
-    public static void save(Connection con, Prospect upProspect) throws SQLException {
+    public static int save(Connection con, Prospect upProspect) throws SQLException {
+        int id=0;
         Statement stmt = null;
         String query = null;
         if (upProspect.getId() == 0) {
             query = "insert into prospects (name_prospect, telephone, adresseMail, address, commentarie, DateDeProspection, interesse) VALUES (?, ?, ?, ?, ?, ? , ?)";
-        } else {
+        }else {
             query = "UPDATE prospects SET name_prospect= ?,telephone= ?,adresseMail=?,address=? ,commentarie=?,DateDeProspection=?,interesse=?  WHERE  id_prospect = ?";
         }
         try {
-            PreparedStatement preparedStmt = con.prepareStatement(query);
+            PreparedStatement preparedStmt = con.prepareStatement(query,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStmt.setString(1, upProspect.getSociale());
             preparedStmt.setString(2, upProspect.getTelephone());
             preparedStmt.setString(3, upProspect.getAdresseMail());
@@ -134,18 +136,24 @@ public class DaoProspect {
             Date date = Date.valueOf(upProspect.getLaDateDeProspection());
             preparedStmt.setDate(6, date);
 
-            if (upProspect.getInteresse().toString().equals("OUI")) {
+            if (upProspect.getInteresse().toString().equals("OUI")){
                 preparedStmt.setByte(7, (byte) 1);
             }
             preparedStmt.setByte(7, (byte) 0);
-            if (upProspect.getId() > 0) {
+            if (upProspect.getId()> 0){
                 preparedStmt.setInt(8, upProspect.getId());
             }
             // execute the preparedstatement
             preparedStmt.executeUpdate();
+            preparedStmt.executeUpdate();
+            ResultSet resultSet =preparedStmt.getGeneratedKeys();
+            if(resultSet.next()){
+                id =resultSet.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return id;
     }
 
     public static void delete(Connection con, int IdProspect) throws SQLException {

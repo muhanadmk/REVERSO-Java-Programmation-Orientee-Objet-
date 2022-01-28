@@ -60,7 +60,7 @@ public class PageManipulerDeList extends JFrame {
     private ChoixUtilisateur.chioxInteresser choixInteresseProspect;
     private Client client;
     private Prospect prospect;
-    private  Client avoirDataClient;
+    private Client avoirDataClient;
     private PageManipulerDeList pageManipulerFere;
     private static final Logger LOGGER = LogManager.getLogger(PageManipulerDeList.class.getName());
 
@@ -74,7 +74,7 @@ public class PageManipulerDeList extends JFrame {
      */
     public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, int getIndexListe, int IdSociete) {
 
-        pageManipulerFere =this;
+        pageManipulerFere = this;
         setContentPane(contentPane);
         modeIInfo.setVisible(false);
         modeleAdress.setVisible(false);
@@ -142,19 +142,20 @@ public class PageManipulerDeList extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (flageClient) {
                     try {
-                        client = new Client(Integer.parseInt(id.getText()),
+                        client = new Client(IdSociete,
                                 nomSociale.getText(), email.getText(), telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(), cd.getText()
                                         , ville.getText()),
                                 Double.parseDouble(chiffreDaffaire.getText()),
                                 Long.parseLong(nombreDeEmployes.getText()));
-                        client.setId(IdSociete);
+
                         err = true;
                     } catch (ExceptionMetier ea) {
                         err = false;
                         messageErr("message Err !!", ea.getMessage());
                     } catch (NumberFormatException n) {
                         err = false;
+                        n.printStackTrace();
                         messageErr("message Err !!", "vous devez ecrir une chiiffre pour nomber employer " +
                                 "et chiffre daffire");
                     } catch (Exception exception) {
@@ -167,12 +168,12 @@ public class PageManipulerDeList extends JFrame {
                     }
                 } else {
                     try {
-                        prospect = new Prospect(Integer.parseInt(id.getText()),nomSociale.getText(), email.getText(),
+                        System.out.println("choixInteresseProspect " + choixInteresseProspect.toString());
+                        prospect = new Prospect(IdSociete, nomSociale.getText(), email.getText(),
                                 telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(),
                                         cd.getText(), ville.getText()),
                                 Utilitaire.dateInput(date.getText()), choixInteresseProspect);
-                        prospect.setId(IdSociete);
                         err = true;
                     } catch (ExceptionMetier ea) {
                         err = false;
@@ -195,23 +196,22 @@ public class PageManipulerDeList extends JFrame {
 
                         if (err) {
                             try {
-                               // Client client1 = (Client) getobjectForEdit(flageClient);
-                              //  client.setId(avoirDataClient.getId());
-                                if (flageClient){
-                                    DaoClient.save(ConnexionManager.getConnexionBD(),client);
+                                if (flageClient) {
+                                    int id = DaoClient.save(ConnexionManager.getConnexionBD(), client);
+                                    client.setId(id);
                                     DaoClient.getListClient().add(client);
-                                }else {
-                                    DaoProspect.save(ConnexionManager.getConnexionBD(),prospect);
+                                } else {
+                                   int id = DaoProspect.save(ConnexionManager.getConnexionBD(), prospect);
+                                    prospect.setId(id);
                                     DaoProspect.getListProspect().add(prospect);
                                 }
-                               // getListPourEdit(flageClient).add(getobjectForEdit(flageClient));
                             } catch (IOException ex) {
                                 err = false;
                                 ex.printStackTrace();
                             } catch (SQLException ex) {
                                 err = false;
                                 ex.printStackTrace();
-                            }catch (DaoSqlEx daoSqlEx){
+                            } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
@@ -225,30 +225,26 @@ public class PageManipulerDeList extends JFrame {
                     case "MODIFIER":
                         if (err) {
                             try {
-                               // Client client1 = (Client) getobjectForEdit(flageClient);
-                                System.out.println("client.getId() in MODIFIER =" + client.getId());
-                               // client.setId(avoirDataClient.getId());
-                                if (flageClient){
-                                    DaoClient.save(ConnexionManager.getConnexionBD(),client);
-                                    DaoClient.getListClient().set(getIndexListe,client);
-                                }else {
-                                    DaoProspect.save(ConnexionManager.getConnexionBD(),prospect);
-                                    DaoProspect.getListProspect().set(getIndexListe,prospect);
+                                if (flageClient) {
+                                    DaoClient.save(ConnexionManager.getConnexionBD(), client);
+                                    DaoClient.getListClient().set(getIndexListe, client);
+                                } else {
+                                    DaoProspect.save(ConnexionManager.getConnexionBD(), prospect);
+                                    DaoProspect.getListProspect().set(getIndexListe, prospect);
                                 }
-                               // getListPourEdit(flageClient).add(getobjectForEdit(flageClient));
                             } catch (IOException ex) {
                                 err = false;
                                 ex.printStackTrace();
                             } catch (SQLException ex) {
                                 err = false;
                                 ex.printStackTrace();
-                            }catch (DaoSqlEx daoSqlEx){
+                            } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
+                                System.exit(1);
                             }
                             affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
-                            //err =true;
                         }
 
                         break;
@@ -259,11 +255,11 @@ public class PageManipulerDeList extends JFrame {
                                 "SUPRIMER", JOptionPane.YES_NO_OPTION);
                         if (isSuprimer == 0) {
                             try {
-                                if (flageClient){
-                                    DaoClient.delete(ConnexionManager.getConnexionBD(),IdSociete);
+                                if (flageClient) {
+                                    DaoClient.delete(ConnexionManager.getConnexionBD(), IdSociete);
                                     DaoClient.getListClient().remove(getIndexListe);
-                                }else {
-                                    DaoProspect.delete(ConnexionManager.getConnexionBD(),IdSociete);
+                                } else {
+                                    DaoProspect.delete(ConnexionManager.getConnexionBD(), IdSociete);
                                     DaoProspect.getListProspect().remove(getIndexListe);
                                 }
 
@@ -273,15 +269,13 @@ public class PageManipulerDeList extends JFrame {
                             } catch (SQLException ex) {
                                 err = false;
                                 ex.printStackTrace();
-                            }catch (DaoSqlEx daoSqlEx){
+                            } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
-                           // err =true;
                             applAccueil();
                         }
-
                         break;
                 }
             }
@@ -301,7 +295,7 @@ public class PageManipulerDeList extends JFrame {
         sortirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               System.exit(0);
+                System.exit(0);
             }
         });
 
@@ -411,7 +405,7 @@ public class PageManipulerDeList extends JFrame {
         } else {
             Prospect avoirDataClient = (Prospect) DaoProspect.getListProspect()
                     .get(getIndexListe);
-            setData(avoirDataClient,IdSociete);
+            setData(avoirDataClient, IdSociete);
             setDataProspect(avoirDataClient);
         }
         modeIInfo.setVisible(true);
@@ -437,6 +431,7 @@ public class PageManipulerDeList extends JFrame {
         }
         return prospect;
     }
+
     private void onCancel() {
         dispose();
         System.exit(0);

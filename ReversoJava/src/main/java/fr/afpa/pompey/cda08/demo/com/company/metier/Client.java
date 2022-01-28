@@ -65,7 +65,7 @@ public class Client extends Societe {
      * @throws ExceptionMetier
      */
     public void setLeNombreDemployes(long leNombreDemployes) throws ExceptionMetier {
-        if (leNombreDemployes <= 0) {
+        if (leNombreDemployes < 0) {
             throw new ExceptionMetier("Le nombre d’employés devra être renseigné et être strictement supérieur à zéro");
         }
         this.LeNombreDemployes = leNombreDemployes;
