@@ -3,17 +3,14 @@ package fr.afpa.pompey.cda08.demo.com.company.vues;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoSqlEx;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +30,7 @@ public class Affichage extends JFrame {
      * @param flageClient
      * @throws ExceptionMetier
      */
-    public Affichage(Boolean flageClient) throws IOException, SQLException {
+    public Affichage(Boolean flageClient) throws DaoSqlEx {
 
         //définir la taille de l'app
         setSize(800, 600);
@@ -54,6 +51,7 @@ public class Affichage extends JFrame {
             public int getColumnCount() {
                 return columnNames.length;
             }
+
             public String getColumnName(int col) {
                 return columnNames[col];
             }
@@ -61,6 +59,7 @@ public class Affichage extends JFrame {
             public int getRowCount() {
                 return data.length;
             }
+
             public Object getValueAt(int row, int col) {
                 return data[row][col];
             }
@@ -69,28 +68,29 @@ public class Affichage extends JFrame {
 
         // on rempile le tableau en utilisant la taille de la list qu'on a récupéré
         if (getListAfichge(flageClient) != null || !(getListAfichge(flageClient).isEmpty())) {
-            data = new String[getListAfichge(flageClient).size()][7];
-            for (int i = 0; i < getListAfichge(flageClient).size(); i++) {
-                for (int j = 0; j < 7; j++) {
-                    Societe societe = (Societe) getListAfichge(flageClient).get(i);
-                    data[i][j++] = String.valueOf(societe.getId());
-                    data[i][j++] = societe.getSociale();
-                    data[i][j++] = societe.getAdresseMail();
-                    data[i][j++] = societe.getTelephone();
-                    data[i][j++] = societe.getAddress().getNumeroDeRue() + " " + societe.getAddress().getNomDeRue() +
-                            " " + societe.getAddress().getVille() + " " + societe.getAddress().getCodePostal();
-                    if (flageClient) {
-                        Client client = (Client) getListAfichge(flageClient).get(i);
-                        data[i][j++] = String.valueOf(client.getLeChiffreDaffaire());
-                        data[i][j++] = String.valueOf(client.getLeNombreDemployes());
-                    } else {
-                        Prospect prospect = (Prospect) getListAfichge(flageClient).get(i);
-                        data[i][j++] = String.valueOf(prospect.getLaDateDeProspection());
-                        data[i][j++] = String.valueOf(prospect.getInteresse());
-                    }
+        data = new String[getListAfichge(flageClient).size()][7];
+        for (int i = 0; i < getListAfichge(flageClient).size(); i++) {
+            for (int j = 0; j < 7; j++) {
+                Societe societe = (Societe) getListAfichge(flageClient).get(i);
+                data[i][j++] = String.valueOf(societe.getId());
+                data[i][j++] = societe.getSociale();
+                data[i][j++] = societe.getAdresseMail();
+                data[i][j++] = societe.getTelephone();
+                data[i][j++] = societe.getAddress().getNumeroDeRue() + " " + societe.getAddress().getNomDeRue() +
+                        " " + societe.getAddress().getVille() + " " + societe.getAddress().getCodePostal();
+                if (flageClient) {
+                    Client client = (Client) getListAfichge(flageClient).get(i);
+                    data[i][j++] = String.valueOf(client.getLeChiffreDaffaire());
+                    data[i][j++] = String.valueOf(client.getLeNombreDemployes());
+                } else {
+                    Prospect prospect = (Prospect) getListAfichge(flageClient).get(i);
+                    data[i][j++] = String.valueOf(prospect.getLaDateDeProspection());
+                    data[i][j++] = String.valueOf(prospect.getInteresse());
                 }
             }
-        } else {
+        }
+         }
+        else {
             JOptionPane.showConfirmDialog(null,
                     "vous avez rine a afichier",
                     "message de Erreur", JOptionPane.DEFAULT_OPTION);
@@ -113,15 +113,17 @@ public class Affichage extends JFrame {
     }
 
 
-    private ArrayList getListAfichge(Boolean flageClient) throws IOException, SQLException {
-        if (flageClient) {
-            return DaoClient.getListClient();
+    private ArrayList getListAfichge(Boolean flageClient) throws DaoSqlEx {
+        try {
+            if (flageClient) {
+                return DaoClient.findAll(ConnexionManager.conn());
+            }
+            return DaoProspect.findAll(ConnexionManager.conn());
+        } catch (DaoSqlEx sq) {
+            throw new DaoSqlEx("err Basee de donnerz ,vous n'avez pas reussi a recuperer les Cilents ou les " +
+                    "prospects essaiez ultiareemnt");
         }
-        return DaoProspect.getListProspect();
     }
-    /*private void onCancel() {
-        dispose();
-        System.exit(0);
-    }*/
+
 }
 
