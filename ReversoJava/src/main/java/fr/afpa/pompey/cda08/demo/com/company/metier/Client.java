@@ -34,7 +34,6 @@ public class Client extends Societe {
         super(id,sociale, adresseMail, telephone, commentaries, address);
         setLeNombreDemployes(leNombreDemployes);
         setLeChiffreDaffaire(leChiffreDaffaire);
-        LOGGER.info("cree Client");
     }
     public Client(){}
     public double getLeChiffreDaffaire() {

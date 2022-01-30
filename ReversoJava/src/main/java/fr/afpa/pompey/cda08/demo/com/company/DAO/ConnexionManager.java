@@ -1,7 +1,6 @@
 package fr.afpa.pompey.cda08.demo.com.company.DAO;
 
 
-import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,17 +15,17 @@ public class ConnexionManager {
 
     private static Connection connexionBD = null;
 
-    private static Connection conn() throws IOException, DaoSqlEx {
-        final Properties dataProperties = new Properties();
-        dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
+    public static Connection conn() throws DaoSqlEx {
         try {
+            final Properties dataProperties = new Properties();
+            dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
             connexionBD = DriverManager.getConnection(
                     dataProperties.getProperty("url"),
                     dataProperties.getProperty("login"),
                     dataProperties.getProperty("password")
             );
             LOGGER.info("connexionBD a russie");
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
             LOGGER.fatal("err dans le connexion de BD" + e.getMessage());
             throw new DaoSqlEx("err dans le connexion de BD");
@@ -35,28 +34,27 @@ public class ConnexionManager {
     }
 
     static{
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            public void run()
+            {
                 try {
-                    if (ConnexionManager.getConnexionBD() != null) {
+                    if (ConnexionManager.conn() != null) {
                         try {
                             LOGGER.info("Database fermée");
-                            ConnexionManager.getConnexionBD().close();
-                        } catch (SQLException | IOException | DaoSqlEx ex) {
+                            ConnexionManager.conn().close();
+
+                        } catch (SQLException ex) {
                             LOGGER.fatal(ex.getMessage());
+                            throw new DaoSqlEx("err dans le connexion de BD");
                         }
                     }
-                } catch (IOException | DaoSqlEx e) {
+                } catch (DaoSqlEx e) {
                     e.printStackTrace();
                 }
             }
         });
     }
-
-    public static Connection getConnexionBD() throws IOException, DaoSqlEx {
-        return connexionBD = conn();
-    }
-
 }
 
 

@@ -88,7 +88,7 @@ public abstract class Societe {
 
 
     public void setTelephone(String telephone) throws ExceptionMetier {
-        if (telephone == null || telephone.length() < 9) {
+        if (telephone == null || !( telephone.length() > 9 && telephone.length()< 15)) {
             throw new ExceptionMetier("Le téléphone devra être renseigné et avoir au moins 10 caractères");
         }
         this.telephone = telephone;

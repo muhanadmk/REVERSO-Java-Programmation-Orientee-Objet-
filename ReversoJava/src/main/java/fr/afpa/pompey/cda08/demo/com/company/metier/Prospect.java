@@ -37,7 +37,6 @@ public class Prospect extends Societe {
         super(id,sociale, adresseMail, telephone, commentaries, address);
         setLaDateDeProspection(laDateDeProspection);
         setInteresse(interesse);
-        LOGGER.info("cree Client");
     }
     public Prospect(){}
     public LocalDate getLaDateDeProspection() {
