@@ -15,12 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import javax.swing.JTextField;
 
 import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.formatter;
@@ -60,7 +55,6 @@ public class PageManipulerDeList extends JFrame {
     private ChoixUtilisateur.chioxInteresser choixInteresseProspect;
     private Client client;
     private Prospect prospect;
-    private Client avoirDataClient;
     private PageManipulerDeList pageManipulerFere;
     private static final Logger LOGGER = LogManager.getLogger(PageManipulerDeList.class.getName());
 
@@ -72,7 +66,7 @@ public class PageManipulerDeList extends JFrame {
      * @param choix
      * @throws ExceptionMetier
      */
-    public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, int getIndexListe, int IdSociete) {
+    public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, Societe societe) throws DaoSqlEx {
 
         pageManipulerFere = this;
         setContentPane(contentPane);
@@ -124,11 +118,11 @@ public class PageManipulerDeList extends JFrame {
                 break;
             case "MODIFIER":
                 submitButton.setText("MODIFIER");
-                remplirTextFild(flageClient, getIndexListe, IdSociete);
+                instertSocieteTextFiled(flageClient, societe);
                 id.setEnabled(false);
                 break;
             case "SUPRIMER":
-                remplirTextFild(flageClient, getIndexListe, IdSociete);
+                instertSocieteTextFiled(flageClient, societe);
                 submitButton.setText("SUPRIMER");
                 setEnabledEnCasDeSuprimer(false);
                 break;
@@ -140,15 +134,20 @@ public class PageManipulerDeList extends JFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int idCerr = 0;
                 if (flageClient) {
+
                     try {
-                        client = new Client(IdSociete,
+                        int idCerrClient = 0;
+                        if (societe != null) {
+                            idCerrClient = societe.getId();
+                        }
+                        client = new Client(idCerrClient,
                                 nomSociale.getText(), email.getText(), telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(), cd.getText()
                                         , ville.getText()),
                                 Double.parseDouble(chiffreDaffaire.getText()),
                                 Long.parseLong(nombreDeEmployes.getText()));
-
                         err = true;
                     } catch (ExceptionMetier ea) {
                         err = false;
@@ -168,8 +167,11 @@ public class PageManipulerDeList extends JFrame {
                     }
                 } else {
                     try {
-                        System.out.println("choixInteresseProspect " + choixInteresseProspect.toString());
-                        prospect = new Prospect(IdSociete, nomSociale.getText(), email.getText(),
+                        int idCerrPorcpect = 0;
+                        if (societe != null) {
+                            idCerrPorcpect = societe.getId();
+                        }
+                        prospect = new Prospect(idCerrPorcpect, nomSociale.getText(), email.getText(),
                                 telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(),
                                         cd.getText(), ville.getText()),
@@ -193,62 +195,28 @@ public class PageManipulerDeList extends JFrame {
 
                 switch (choix.toString()) {
                     case "CREATION":
-
-                        if (err) {
-                            try {
-                                if (flageClient) {
-                                    int id = DaoClient.save(ConnexionManager.getConnexionBD(), client);
-                                    client.setId(id);
-                                    DaoClient.getListClient().add(client);
-                                } else {
-                                   int id = DaoProspect.save(ConnexionManager.getConnexionBD(), prospect);
-                                    prospect.setId(id);
-                                    DaoProspect.getListProspect().add(prospect);
-                                }
-                            } catch (IOException ex) {
-                                err = false;
-                                ex.printStackTrace();
-                            } catch (SQLException ex) {
-                                err = false;
-                                ex.printStackTrace();
-                            } catch (DaoSqlEx daoSqlEx) {
-                                err = false;
-                                daoSqlEx.printStackTrace();
-                                messageErr("err basse de donne ", daoSqlEx.getMessage());
-                            }
-                            affichageAccueilEtFermerLeEdit("vous avez bien cree");
-                            //err =true;
-                        }
-
-                        break;
-
                     case "MODIFIER":
                         if (err) {
                             try {
                                 if (flageClient) {
-                                    DaoClient.save(ConnexionManager.getConnexionBD(), client);
-                                    DaoClient.getListClient().set(getIndexListe, client);
+                                    int id = DaoClient.save(ConnexionManager.conn(), client);
+                                    client.setId(id);
                                 } else {
-                                    DaoProspect.save(ConnexionManager.getConnexionBD(), prospect);
-                                    DaoProspect.getListProspect().set(getIndexListe, prospect);
+                                    int id = DaoProspect.save(ConnexionManager.conn(), prospect);
+                                    prospect.setId(id);
                                 }
-                            } catch (IOException ex) {
-                                err = false;
-                                ex.printStackTrace();
-                            } catch (SQLException ex) {
-                                err = false;
-                                ex.printStackTrace();
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
-                                System.exit(1);
                             }
-                            affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
+                            if (choix.toString().equals("CREATION")){
+                                affichageAccueilEtFermerLeEdit("vous avez bien cree");
+                            }else {
+                                affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
+                            }
                         }
-
                         break;
-
                     case "SUPRIMER":
                         int isSuprimer = JOptionPane.showConfirmDialog(null,
                                 "vous etes sur de SUPRIMER",
@@ -256,19 +224,11 @@ public class PageManipulerDeList extends JFrame {
                         if (isSuprimer == 0) {
                             try {
                                 if (flageClient) {
-                                    DaoClient.delete(ConnexionManager.getConnexionBD(), IdSociete);
-                                    DaoClient.getListClient().remove(getIndexListe);
+                                    DaoClient.delete(ConnexionManager.conn(), societe.getId());
                                 } else {
-                                    DaoProspect.delete(ConnexionManager.getConnexionBD(), IdSociete);
-                                    DaoProspect.getListProspect().remove(getIndexListe);
+                                    DaoProspect.delete(ConnexionManager.conn(), societe.getId());
                                 }
 
-                            } catch (IOException ex) {
-                                err = false;
-                                ex.printStackTrace();
-                            } catch (SQLException ex) {
-                                err = false;
-                                ex.printStackTrace();
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 daoSqlEx.printStackTrace();
@@ -305,40 +265,29 @@ public class PageManipulerDeList extends JFrame {
     /**
      * remplie le data qui sont partger
      *
-     * @param avoirDataClient
+     * @param societe
      */
-    private void setData(Societe avoirDataClient, int IdSociete) {
-        id.setText(Integer.toString(IdSociete));
-        nomSociale.setText(avoirDataClient.getSociale());
-        telephone.setText(avoirDataClient.getTelephone());
-        cd.setText(avoirDataClient.getAddress().getCodePostal());
-        email.setText(avoirDataClient.getAdresseMail());
-        commentaire.setText(avoirDataClient.getCommentaries());
-        numeroDeRue.setText(avoirDataClient.getAddress().getNumeroDeRue());
-        NomDeRue.setText(avoirDataClient.getAddress().getNumeroDeRue());
-        ville.setText(avoirDataClient.getAddress().getVille());
-    }
-
-    /**
-     * remplie le data qui uniqe a client
-     * remplie le data qui sur
-     *
-     * @param avoirDataClient
-     */
-    private void setDataClient(Client avoirDataClient) {
-        chiffreDaffaire.setText(Double.toString(avoirDataClient.getLeChiffreDaffaire()));
-        nombreDeEmployes.setText(Long.toString(avoirDataClient.getLeNombreDemployes()));
-    }
-
-    /**
-     * remplie le data qui uniqe a Prospect
-     *
-     * @param avoirDataClient
-     */
-
-    private void setDataProspect(Prospect avoirDataClient) {
-        date.setText(avoirDataClient.getLaDateDeProspection().format(formatter));
-        interesseProspect.setSelectedItem(avoirDataClient.getInteresse());
+    private void instertSocieteTextFiled(Boolean flageClient, Societe societe) {
+        if (flageClient) {
+            Client client1 = ((Client) societe);
+            chiffreDaffaire.setText(Double.toString(client1.getLeChiffreDaffaire()));
+            nombreDeEmployes.setText(Long.toString(client1.getLeNombreDemployes()));
+        } else {
+            Prospect prospect1 = ((Prospect) societe);
+            date.setText(prospect1.getLaDateDeProspection().format(formatter));
+            interesseProspect.setSelectedItem(prospect1.getInteresse());
+        }
+        id.setText(Integer.toString(societe.getId()));
+        nomSociale.setText(societe.getSociale());
+        telephone.setText(societe.getTelephone());
+        cd.setText(societe.getAddress().getCodePostal());
+        email.setText(societe.getAdresseMail());
+        commentaire.setText(societe.getCommentaries());
+        numeroDeRue.setText(societe.getAddress().getNumeroDeRue());
+        NomDeRue.setText(societe.getAddress().getNumeroDeRue());
+        ville.setText(societe.getAddress().getVille());
+        modeIInfo.setVisible(true);
+        modeleAdress.setVisible(true);
     }
 
     /**
@@ -358,20 +307,6 @@ public class PageManipulerDeList extends JFrame {
         Accueil accueil = new Accueil();
         accueil.setVisible(true);
         dispose();
-    }
-
-    /**
-     * on récupère la liste solon le choix de user
-     *
-     * @param flageClient
-     * @return
-     */
-    private ArrayList getListPourEdit(Boolean flageClient) throws IOException, SQLException {
-        if (flageClient) {
-            return DaoClient.getListClient();
-        } else {
-            return DaoProspect.getListProspect();
-        }
     }
 
     /**
@@ -395,23 +330,6 @@ public class PageManipulerDeList extends JFrame {
         interesseProspect.setEnabled(faux);
     }
 
-    private void remplirTextFild(Boolean flageClient, int getIndexListe, int IdSociete) {
-        if (flageClient) {
-            avoirDataClient = (Client) DaoClient.getListClient()
-                    .get(getIndexListe);
-            setData(avoirDataClient, IdSociete);
-            setDataClient(avoirDataClient);
-
-        } else {
-            Prospect avoirDataClient = (Prospect) DaoProspect.getListProspect()
-                    .get(getIndexListe);
-            setData(avoirDataClient, IdSociete);
-            setDataProspect(avoirDataClient);
-        }
-        modeIInfo.setVisible(true);
-        modeleAdress.setVisible(true);
-    }
-
     /**
      * on affiche message de erreur
      *
@@ -423,17 +341,11 @@ public class PageManipulerDeList extends JFrame {
                 messageErr,
                 titleBox, JOptionPane.DEFAULT_OPTION);
     }
-
     //get object For Edit
     private Societe getobjectForEdit(Boolean flageClient) {
         if (flageClient) {
             return client;
         }
         return prospect;
-    }
-
-    private void onCancel() {
-        dispose();
-        System.exit(0);
     }
 }
