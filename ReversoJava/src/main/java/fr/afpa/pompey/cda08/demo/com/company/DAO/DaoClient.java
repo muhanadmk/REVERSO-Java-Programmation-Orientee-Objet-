@@ -10,95 +10,84 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DaoClient {
-    private static Client client;
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
-    private static ArrayList<Client> listClient = new ArrayList();
-
+    private static Statement stmt = null;
+    private static PreparedStatement preparedStmt = null;
+    private static Client client;
     public DaoClient() {
     }
 
-
-    public static ArrayList getListClient() {
-        return listClient;
-    }
-    public static void setClient(int id ,String sociale, String adresseMail, String telephone, String commentaries,
-                                 String numeroDeRue, String codePostal, String nomDeRue, String ville,
-                                 double leChiffreDaffaire, long leNombreDemployes) throws ExceptionMetier {
-        client = new Client(id,sociale, adresseMail, telephone,
-                commentaries,
-                new Address(numeroDeRue, nomDeRue, codePostal,
-                        ville), leChiffreDaffaire, leNombreDemployes);
-    }
-
-    public static Client getClient() {
-        return client;
-    }
-
-    public static ArrayList<Client> findAll(Connection con) throws SQLException {
-        Statement stmt = null;
+    public static ArrayList<Client> findAll(Connection con) throws DaoSqlEx {
         String query = "SELECT * FROM clients";
-
+        ArrayList <Client> listClient = new ArrayList<>();
         try {
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                String name_Client = rs.getString("name_Client");
-                int Id_cliente = rs.getInt("Id_cliente");
-                String adresseMail = rs.getString("adresseMail");
-                String telephone = rs.getString("telephone");
-                String address = rs.getString("address");
-                String commentarie = rs.getString("commentarie");
-                int Nombre_demployes = rs.getInt("Nombre_demployes");
-                double Chiffre_daffaire = rs.getDouble("Chiffre_daffaire");
-                setClient(Id_cliente,name_Client, adresseMail, telephone, commentarie, address, address, address, address,
-                        Chiffre_daffaire, Nombre_demployes);
+                client = new Client(rs.getInt("Id_cliente"),rs.getString("name_Client"),
+                        rs.getString("adresseMail"), rs.getString("telephone"),
+                        rs.getString("commentarie"),
+                        new Address(rs.getString("address"),"2","2","2"),
+                        rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
                 listClient.add(client);
             }
-        } catch (SQLException | ExceptionMetier sqlE) {
-            sqlE.printStackTrace();
+        }
+        catch (SQLException | ExceptionMetier e ) {
+            e.printStackTrace();
+            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents");
         } finally {
             if (stmt != null) {
-                stmt.close();
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
         return listClient;
     }
 
 
-    public static void find(Connection con, String IdCliente) throws SQLException {
-        String sql = "SELECT * FROM clients where Id_cliente=?";
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, IdCliente);
+    public static Client find(Connection con, String nameCliente) throws DaoSqlEx {
+        Client client =null;
         try {
-            ResultSet rs = stmt.executeQuery();
+            String sql = "SELECT * FROM clients where name_Client=?";
+            preparedStmt = con.prepareStatement(sql);
+            preparedStmt.setString(1, nameCliente);
+            ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
-                String name_Client = rs.getString("name_Client");
-                int Id_cliente = rs.getInt("Id_cliente");
-                String telephone = rs.getString("telephone");
-                String address = rs.getString("address");
-                String commentarie = rs.getString("commentarie");
-                int Nombre_demployes = rs.getInt("Nombre_demployes");
-                double Chiffre_daffaire = rs.getDouble("Chiffre_daffaire");
+                client = new Client(rs.getInt("Id_cliente"),rs.getString("name_Client"),
+                        rs.getString("adresseMail"), rs.getString("telephone"),
+                        rs.getString("commentarie"),
+                        new Address(rs.getString("address"),"2","2","2"),
+                        rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
+
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }  catch (SQLException | ExceptionMetier e ) {
+            throw new DaoSqlEx("error base de données essaiez ultiareemnt");
         } finally {
             if (stmt != null) {
-                stmt.close();
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new DaoSqlEx("error base de données essaiez ultiareemnt");
+                }
             }
         }
+        return client;
     }
 
-    public static int save(Connection con, Client Upclient) throws SQLException {
+    public static int save(Connection con, Client Upclient) throws DaoSqlEx {
         int id = 0;
-        Statement stmt = null;
-        PreparedStatement preparedStmt = null;
         String query = null;
-        System.out.println("Upclient.getId() =" + Upclient.getId());
         if (Upclient.getId() == 0) {
-            query = "INSERT INTO  clients(name_Client, telephone, adresseMail, address, commentarie, Nombre_demployes, Chiffre_daffaire) VALUES (?,?,?,?,?,?,?)";
+            query = "INSERT INTO  clients(name_Client, telephone, adresseMail, address, commentarie," +
+                    " Nombre_demployes, Chiffre_daffaire) VALUES (?,?,?,?,?,?,?)";
         } else {
-            query = "UPDATE clients SET name_Client= ?,telephone= ?,adresseMail=?,address=? ,commentarie=?,Nombre_demployes=?,Chiffre_daffaire=?  WHERE  Id_cliente = ?";
+            query = "UPDATE clients SET name_Client= ?,telephone= ?,adresseMail=?,address=? ,commentarie=?," +
+                    "Nombre_demployes=?,Chiffre_daffaire=?  WHERE  Id_cliente = ?";
         }
         try {
             preparedStmt = con.prepareStatement(query,
@@ -121,33 +110,52 @@ public class DaoClient {
             if(resultSet.next()){
                 id =resultSet.getInt(1);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            if (preparedStmt != null) {
+            if (preparedStmt !=null){
                 preparedStmt.close();
             }
-            if (stmt != null) {
-                stmt.close();
+        } catch (SQLException e ) {
+            throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
+                    " cree un Cilente essaiez ultiareemnt");
+        } finally {
+            if (preparedStmt != null) {
+                try {
+                    preparedStmt.close();
+                } catch (SQLException e) {
+                    System.err.print("Transaction is being rolled back");
+                    e.printStackTrace();
+                }
+            }
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.print("Transaction is being rolled back");
+                e.printStackTrace();
             }
         }
         return id;
     }
 
-    public static void delete(Connection con, int IdClient) throws SQLException {
-        Statement stmt = null;
+    public static void delete(Connection con, int IdClient) throws DaoSqlEx {
         String query = "delete from clients where Id_cliente = ?";
         try {
-            PreparedStatement preparedStmt = con.prepareStatement(query);
+            preparedStmt = con.prepareStatement(query);
             preparedStmt.setInt(1, IdClient);
 
             // execute the preparedstatement
             preparedStmt.execute();
+            if (preparedStmt !=null){
+                preparedStmt.close();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent");
         }finally {
             if (stmt != null) {
-                stmt.close();
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
