@@ -24,7 +24,8 @@ public class DaoClient {
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                client = new Client(rs.getInt("Id_cliente"),rs.getString("name_Client"),
+                client =
+                        new Client(rs.getInt("Id_cliente"),rs.getString("name_Client"),
                         rs.getString("adresseMail"), rs.getString("telephone"),
                         rs.getString("commentarie"),
                         new Address(rs.getString("address"),"2","2","2"),
@@ -44,17 +45,15 @@ public class DaoClient {
                 }
             }
         }
-
         return listClient;
     }
 
 
-    public static Client find(Connection con, String nameCliente) throws DaoSqlEx {
-        Client client =null;
+    public static Client find(Connection con, int idcliente) throws DaoSqlEx {
         try {
-            String sql = "SELECT * FROM clients where name_Client=?";
-            preparedStmt = con.prepareStatement(sql);
-            preparedStmt.setString(1, nameCliente);
+            String query = "SELECT * FROM clients where Id_cliente=?";
+            preparedStmt = con.prepareStatement(query);
+            preparedStmt.setInt(1, idcliente);
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
                 client = new Client(rs.getInt("Id_cliente"),rs.getString("name_Client"),
@@ -62,8 +61,8 @@ public class DaoClient {
                         rs.getString("commentarie"),
                         new Address(rs.getString("address"),"2","2","2"),
                         rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
-
             }
+            client.setListContrat(DaoContrat.findByIdClient(con, idcliente));
         }  catch (SQLException | ExceptionMetier e ) {
             throw new DaoSqlEx("error base de données essaiez ultiareemnt");
         } finally {
