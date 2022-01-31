@@ -5,6 +5,8 @@ import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+
 
 /**
  * classe client qui hérite de la class société en plus il va avoir attribué différentes
@@ -14,6 +16,7 @@ public class Client extends Societe {
 
     private double LeChiffreDaffaire;
     private long LeNombreDemployes;
+    private ArrayList<Contrat> listContrat = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(Client.class.getName());
 
 
@@ -70,14 +73,20 @@ public class Client extends Societe {
         this.LeNombreDemployes = leNombreDemployes;
     }
 
+    public ArrayList<Contrat> getListContrat() {
+        return listContrat;
+    }
+
+    public void setListContrat(ArrayList<Contrat> listContrat) {
+        this.listContrat = listContrat;
+    }
 
     @Override
     public String toString() {
-        return super.toString() + "Client{" +
-                "Client Id " + getId() +
-                " LeChiffreDaffaire=" + LeChiffreDaffaire +
+        return "Client{" +
+                "LeChiffreDaffaire=" + LeChiffreDaffaire +
                 ", LeNombreDemployes=" + LeNombreDemployes +
+                ", listContrat=" + listContrat +
                 '}';
     }
-
 }
