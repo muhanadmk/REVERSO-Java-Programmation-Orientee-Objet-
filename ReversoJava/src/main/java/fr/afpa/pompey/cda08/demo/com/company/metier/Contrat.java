@@ -9,10 +9,10 @@ public class Contrat {
     public Contrat(){}
 
     public Contrat(int id, int idClient, String libelleDeContrat, double montantDeContrat) {
-        this.id = id;
-        this.idClient = idClient;
-        this.libelleDeContrat = libelleDeContrat;
-        this.montantDeContrat = montantDeContrat;
+        setId(id);
+        setIdClient(idClient);
+        setLibelleDeContrat(libelleDeContrat);
+        setMontantDeContrat(montantDeContrat);
     }
 
     public int getId() {
@@ -45,5 +45,15 @@ public class Contrat {
 
     public void setMontantDeContrat(double montantDeContrat) {
         this.montantDeContrat = montantDeContrat;
+    }
+
+    @Override
+    public String toString() {
+        return "Contrat{" +
+                "id=" + id +
+                ", idClient=" + idClient +
+                ", libelleDeContrat='" + libelleDeContrat + '\'' +
+                ", montantDeContrat=" + montantDeContrat +
+                '}';
     }
 }
