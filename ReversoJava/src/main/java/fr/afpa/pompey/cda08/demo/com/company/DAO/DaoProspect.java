@@ -25,14 +25,13 @@ public class DaoProspect {
     public DaoProspect() {
     }
 
-    public static ArrayList<Prospect> findAll(Connection con) throws DaoSqlEx {
+    public static ArrayList<Prospect> findAll(Connection con) throws DaoSqlEx,ExceptionMetier {
         String query = "SELECT * FROM prospects";
         ArrayList<Prospect> listProspect = new ArrayList();
         try {
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-
                 byte interesse = rs.getByte("interesse");
                 ChoixUtilisateur.chioxInteresser  choxInteresse = null;
                 if (((int) interesse) == 1){
@@ -48,27 +47,22 @@ public class DaoProspect {
                         choxInteresse);
                 listProspect.add(prospect);
             }
-        }catch (SQLException | ExceptionMetier e ) {
-            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects"
-            +"essaiez ultiareemnt");
-        } finally {
             if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    throw new DaoSqlEx("error base de données essaiez ultiareemnt");
-                }
+                stmt.close();
             }
+        }catch (SQLException e ) {
+            e.printStackTrace();
+            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects "
+            +"essaiez ultiareemnt");
         }
         return listProspect;
     }
 
-    public static Prospect find(Connection con, String idProspect) throws DaoSqlEx {
-        String sql = "SELECT * FROM prospects where name_prospect=?";
+    public static Prospect find(Connection con, int idProspect) throws DaoSqlEx,ExceptionMetier {
+        String sql = "SELECT * FROM prospects where idProspect=?";
         try {
             preparedStmt = con.prepareStatement(sql);
-            preparedStmt.setString(1, idProspect);
+            preparedStmt.setInt(1, idProspect);
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
                 byte interesse = rs.getByte("interesse");
@@ -85,18 +79,12 @@ public class DaoProspect {
                         Utilitaire.dateInput(rs.getDate("DateDeProspection").toLocalDate().format(formatter)),
                         choxInteresse);
             }
-        }  catch (SQLException | ExceptionMetier e ) {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }  catch (SQLException e ) {
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer le prospects" +
                     "essaiez ultiareemnt");
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    throw new DaoSqlEx("error base de données essaiez ultiareemnt");
-                }
-            }
         }
         return prospect;
     }
@@ -139,26 +127,12 @@ public class DaoProspect {
             if(resultSet.next()){
                 id =resultSet.getInt(1);
             }
+            if (preparedStmt != null) {
+                preparedStmt.close();
+            }
         } catch (SQLException e ) {
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
                     " cree un procpect essaiez ultiareemnt");
-        } finally {
-            if (preparedStmt != null) {
-                try {
-                    preparedStmt.close();
-                } catch (SQLException e) {
-                    System.err.print("Transaction is being rolled back");
-                    e.printStackTrace();
-                    throw new DaoSqlEx("error base de données essaiez ultiareemnt");
-                }
-            }
-            try {
-                con.setAutoCommit(true);
-            } catch (SQLException e) {
-                System.err.print("Transaction is being rolled back");
-                e.printStackTrace();
-                throw new DaoSqlEx("error base de données essaiez ultiareemnt");
-            }
         }
         return id;
     }
@@ -170,19 +144,13 @@ public class DaoProspect {
             preparedStmt.setInt(1, IdProspect);
             // execute the preparedstatement
             preparedStmt.execute();
+            if (stmt != null) {
+                stmt.close();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
                     " essaiez ultiareemnt");
-        }finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    throw new DaoSqlEx("error base de données essaiez ultiareemnt");
-                }
-            }
         }
     }
 }
