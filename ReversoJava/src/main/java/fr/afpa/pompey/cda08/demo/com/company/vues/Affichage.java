@@ -1,3 +1,4 @@
+
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
 import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
@@ -13,9 +14,11 @@ import javax.swing.table.TableModel;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+
 /**
  * classe pour afficher en jatble le liste qui le user a choisi
  */
+
 public class Affichage extends JFrame {
     private JPanel contentPane;
     private JTable table;
@@ -24,13 +27,15 @@ public class Affichage extends JFrame {
     private JScrollPane scrollpane;
     private String[][] data;
 
-    /**
+
+/**
      * on récupère si client si non on traite le prospect
      *
      * @param flageClient
      * @throws ExceptionMetier
      */
-    public Affichage(Boolean flageClient) throws DaoSqlEx {
+
+    public Affichage(Boolean flageClient) {
 
         //définir la taille de l'app
         setSize(800, 600);
@@ -113,17 +118,20 @@ public class Affichage extends JFrame {
     }
 
 
-    private ArrayList getListAfichge(Boolean flageClient) throws DaoSqlEx {
+    private ArrayList getListAfichge(Boolean flageClient) {
         try {
             if (flageClient) {
                 return DaoClient.findAll(ConnexionManager.conn());
+            }else {
+                return DaoProspect.findAll(ConnexionManager.conn());
             }
-            return DaoProspect.findAll(ConnexionManager.conn());
         } catch (DaoSqlEx sq) {
-            throw new DaoSqlEx("err Basee de donnerz ,vous n'avez pas reussi a recuperer les Cilents ou les " +
-                    "prospects essaiez ultiareemnt");
+           sq.printStackTrace();
+        }catch (ExceptionMetier exceptionMetier){
+            exceptionMetier.printStackTrace();
         }
+        return null;
     }
-
 }
+
 

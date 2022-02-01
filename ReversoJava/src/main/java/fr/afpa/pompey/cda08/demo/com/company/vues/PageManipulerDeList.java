@@ -1,3 +1,4 @@
+
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
 import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
@@ -20,9 +21,11 @@ import javax.swing.JTextField;
 
 import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.formatter;
 
+
 /**
  * Le page on fait le crrer modification et suppression
  */
+
 public class PageManipulerDeList extends JFrame {
     private JPanel contentPane;
     private JButton homeButton;
@@ -59,13 +62,15 @@ public class PageManipulerDeList extends JFrame {
     private static final Logger LOGGER = LogManager.getLogger(PageManipulerDeList.class.getName());
 
 
-    /**
+
+/**
      * on récupère la paramètre si le choix de user un client si le falge no alors on travaille sur prospect
      *
      * @param flageClient
      * @param choix
      * @throws ExceptionMetier
      */
+
     public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, Societe societe) throws DaoSqlEx {
 
         pageManipulerFere = this;
@@ -102,11 +107,13 @@ public class PageManipulerDeList extends JFrame {
             nombreDeEmployes.setVisible(false);
         }
 
-        /**
+
+/**
          * qu'on récupère de la méthode chiox de class
          * choix utilisateurs
          * on affiche où on désactivé des textes filde solon le choix
          */
+
 
         switch (choix.toString()) {
             case "CREATION":
@@ -128,9 +135,11 @@ public class PageManipulerDeList extends JFrame {
                 break;
         }
 
-        /**
+
+/**
          * cette btn sera selon le choix de user si créer ou supprimer ou modifier
          */
+
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -240,9 +249,11 @@ public class PageManipulerDeList extends JFrame {
                 }
             }
         });
-        /**
+
+/**
          * pour retoue a la page accueil
          */
+
         homeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -262,21 +273,14 @@ public class PageManipulerDeList extends JFrame {
 
     }
 
-    /**
+
+/**
      * remplie le data qui sont partger
      *
      * @param societe
      */
+
     private void instertSocieteTextFiled(Boolean flageClient, Societe societe) {
-        if (flageClient) {
-            Client client1 = ((Client) societe);
-            chiffreDaffaire.setText(Double.toString(client1.getLeChiffreDaffaire()));
-            nombreDeEmployes.setText(Long.toString(client1.getLeNombreDemployes()));
-        } else {
-            Prospect prospect1 = ((Prospect) societe);
-            date.setText(prospect1.getLaDateDeProspection().format(formatter));
-            interesseProspect.setSelectedItem(prospect1.getInteresse());
-        }
         id.setText(Integer.toString(societe.getId()));
         nomSociale.setText(societe.getSociale());
         telephone.setText(societe.getTelephone());
@@ -286,16 +290,27 @@ public class PageManipulerDeList extends JFrame {
         numeroDeRue.setText(societe.getAddress().getNumeroDeRue());
         NomDeRue.setText(societe.getAddress().getNumeroDeRue());
         ville.setText(societe.getAddress().getVille());
+        if (flageClient) {
+            Client client1 = ((Client) societe);
+            chiffreDaffaire.setText(Double.toString(client1.getLeChiffreDaffaire()));
+            nombreDeEmployes.setText(Long.toString(client1.getLeNombreDemployes()));
+        } else {
+            Prospect prospect1 = ((Prospect) societe);
+            date.setText(prospect1.getLaDateDeProspection().format(formatter));
+            interesseProspect.setSelectedItem(prospect1.getInteresse());
+        }
         modeIInfo.setVisible(true);
         modeleAdress.setVisible(true);
     }
 
-    /**
+
+/**
      * pour former la page édition et aller dans le page d'accueil
      * on pass en paramètre la message qu'on veut afficher
      *
      * @param msg
      */
+
     private void affichageAccueilEtFermerLeEdit(String msg) {
         JOptionPane.showConfirmDialog(null,
                 msg,
@@ -309,11 +324,12 @@ public class PageManipulerDeList extends JFrame {
         dispose();
     }
 
-    /**
+/**
      * pour ne pas modifier les textes filde quand on est dans le cadre de suppression
      *
      * @param faux
      */
+
     private void setEnabledEnCasDeSuprimer(Boolean faux) {
         nomSociale.setEnabled(faux);
         chiffreDaffaire.setEnabled(faux);
@@ -330,12 +346,13 @@ public class PageManipulerDeList extends JFrame {
         interesseProspect.setEnabled(faux);
     }
 
-    /**
+/**
      * on affiche message de erreur
      *
      * @param titleBox
      * @param messageErr
      */
+
     private void messageErr(String titleBox, String messageErr) {
         JOptionPane.showConfirmDialog(null,
                 messageErr,
@@ -349,3 +366,4 @@ public class PageManipulerDeList extends JFrame {
         return prospect;
     }
 }
+
