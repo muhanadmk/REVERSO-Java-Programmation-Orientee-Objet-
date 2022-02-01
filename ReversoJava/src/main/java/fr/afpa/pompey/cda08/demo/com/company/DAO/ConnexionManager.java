@@ -5,7 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnexionManager {
@@ -16,16 +18,22 @@ public class ConnexionManager {
     private static Connection connexionBD = null;
 
     public static Connection conn() throws DaoSqlEx {
+        final Properties dataProperties = new Properties();
         try {
-            final Properties dataProperties = new Properties();
             dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOGGER.fatal("err dans le parm de connexion de BD" + e.getMessage());
+            throw new DaoSqlEx("err dans le parm de connexion de BD");
+        }
+        try {
             connexionBD = DriverManager.getConnection(
                     dataProperties.getProperty("url"),
                     dataProperties.getProperty("login"),
                     dataProperties.getProperty("password")
             );
             LOGGER.info("connexionBD a russie");
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             LOGGER.fatal("err dans le connexion de BD" + e.getMessage());
             throw new DaoSqlEx("err dans le connexion de BD");
