@@ -38,7 +38,7 @@ public class DaoClient extends DAO {
                 stmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents " + e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents");
         }
         return listClient;
@@ -62,6 +62,7 @@ public class DaoClient extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer le Cilente" + e.getMessage());
             throw new DaoSqlEx("error base de données essaiez ultiareemnt");
         }
         return client;
@@ -103,6 +104,8 @@ public class DaoClient extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a ous n'avez pas reussi a modifier ou" +
+                    "cree un Cilente essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
                     " cree un Cilente essaiez ultiareemnt");
         }
@@ -121,7 +124,7 @@ public class DaoClient extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent" + e.getMessage());
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent");
         }
     }

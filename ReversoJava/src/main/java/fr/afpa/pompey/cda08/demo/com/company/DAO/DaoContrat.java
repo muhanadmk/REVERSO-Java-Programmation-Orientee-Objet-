@@ -5,11 +5,14 @@ import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
 
 public class DaoContrat extends DAO{
+    private static final Logger LOGGER = LogManager.getLogger(DaoContrat.class.getName());
     private static PreparedStatement preparedStmt;
     private static Statement stmt;
     public DaoContrat() {
@@ -53,7 +56,7 @@ public class DaoContrat extends DAO{
                 preparedStmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("error Basee de donnees ,error base de données vous pouvez pas recuperer" + e.getMessage());
             throw new DaoSqlEx("error base de données vous pouvez pas recuperer " +
                     "les contrats essaiez ultiareemnt");
         }
@@ -76,7 +79,7 @@ public class DaoContrat extends DAO{
                 stmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents" + e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents");
         }
         return listClientQuiontdeContrat;

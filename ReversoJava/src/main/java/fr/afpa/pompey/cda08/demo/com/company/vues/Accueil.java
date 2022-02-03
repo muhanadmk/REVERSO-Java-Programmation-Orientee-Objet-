@@ -7,6 +7,8 @@ import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -42,9 +44,11 @@ public class Accueil extends JFrame {
     private boolean flageClient = false;
     private boolean condtionAficheEdit = false;
     private Accueil accueilFreme;
+    private static final Logger LOGGER = LogManager.getLogger(Accueil.class.getName());
 
 
-/**
+
+    /**
      * constructeur classe d'accueil sur lequel on définit les mêmes on veut
      */
 
@@ -130,6 +134,7 @@ public class Accueil extends JFrame {
                     pageManipulerDeList.setVisible(true);
                     dispose();
                 } catch (DaoSqlEx daoSqlEx) {
+                    LOGGER.info("err BD", daoSqlEx.getMessage());
                     messageErr("err BD", daoSqlEx.getMessage());
                 }
 
@@ -158,6 +163,7 @@ public class Accueil extends JFrame {
                             pageManipulerDeList.setVisible(true);
                             dispose();
                         } catch (DaoSqlEx daoSqlEx) {
+                            LOGGER.info("err BD", daoSqlEx.getMessage());
                             messageErr("ERR BD ", daoSqlEx.getMessage());
                         }
                     }
@@ -193,6 +199,7 @@ public class Accueil extends JFrame {
                             pageManipulerDeList.setVisible(true);
                             dispose();
                         } catch (DaoSqlEx daoSqlEx) {
+                            LOGGER.info("err BD", daoSqlEx.getMessage());
                             messageErr("ERR BD ", daoSqlEx.getMessage());
                         }
                     }
@@ -254,9 +261,11 @@ public class Accueil extends JFrame {
         try {
             return new DaoContrat().findAllCilentQuiOntContrat(ConnexionManager.conn());
         } catch (DaoSqlEx daoSqlEx) {
+            LOGGER.info("err BD", daoSqlEx.getMessage());
             messageErr("ERR BD ", daoSqlEx.getMessage());
             return null;
         }catch (ExceptionMetier exceptionMetier) {
+            LOGGER.info("err BD", exceptionMetier.getMessage());
             messageErr("Err ", exceptionMetier.getMessage());
             return null;
         }

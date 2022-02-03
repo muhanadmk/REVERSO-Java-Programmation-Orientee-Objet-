@@ -3,7 +3,6 @@ package fr.afpa.pompey.cda08.demo.com.company.DAO;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Prospect;
 
 import java.sql.Connection;
 import java.util.ArrayList;

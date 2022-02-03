@@ -22,7 +22,6 @@ public class ConnexionManager {
         try {
             dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
         } catch (IOException e) {
-            e.printStackTrace();
             LOGGER.fatal("err dans le parm de connexion de BD" + e.getMessage());
             throw new DaoSqlEx("err dans le parm de connexion de BD");
         }
@@ -34,7 +33,6 @@ public class ConnexionManager {
             );
             LOGGER.info("connexionBD a russie");
         } catch (SQLException e) {
-            e.printStackTrace();
             LOGGER.fatal("err dans le connexion de BD" + e.getMessage());
             throw new DaoSqlEx("err dans le connexion de BD");
         }
@@ -49,16 +47,15 @@ public class ConnexionManager {
                 try {
                     if (ConnexionManager.conn() != null) {
                         try {
-                            LOGGER.info("Database fermée");
                             ConnexionManager.conn().close();
-
+                            LOGGER.info("Database fermée");
                         } catch (SQLException ex) {
                             LOGGER.fatal(ex.getMessage());
                             throw new DaoSqlEx("err dans le connexion de BD");
                         }
                     }
                 } catch (DaoSqlEx e) {
-                    e.printStackTrace();
+                    LOGGER.fatal("Database ne pas bien fermée" + e.getMessage());
                 }
             }
         });
