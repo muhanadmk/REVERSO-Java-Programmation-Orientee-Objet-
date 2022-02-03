@@ -129,7 +129,7 @@ public class Accueil extends JFrame {
                     pageManipulerDeList.setVisible(true);
                     dispose();
                 } catch (DaoSqlEx daoSqlEx) {
-                    daoSqlEx.printStackTrace();
+                    messageErr("err BD", daoSqlEx.getMessage());
                 }
 
             }
@@ -157,7 +157,7 @@ public class Accueil extends JFrame {
                             pageManipulerDeList.setVisible(true);
                             dispose();
                         } catch (DaoSqlEx daoSqlEx) {
-                            daoSqlEx.printStackTrace();
+                            messageErr("ERR BD ", daoSqlEx.getMessage());
                         }
                     }
                     condtionAficheEdit = true;
@@ -192,7 +192,7 @@ public class Accueil extends JFrame {
                             pageManipulerDeList.setVisible(true);
                             dispose();
                         } catch (DaoSqlEx daoSqlEx) {
-                            daoSqlEx.printStackTrace();
+                            messageErr("ERR BD ", daoSqlEx.getMessage());
                         }
                     }
                     condtionAficheEdit = true;
@@ -248,7 +248,6 @@ public class Accueil extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 Client client = clientsContrat.get(ClinetsQuiOntContra.getSelectedIndex());
-                System.out.println(client.getId());
                 ContratsVue contratsVue = new ContratsVue(client.getId());
                 contratsVue.setVisible(true);
             }
@@ -261,15 +260,15 @@ public class Accueil extends JFrame {
             }
         });
     }
-
+    //recuperer tous les clients qui ont des contrats
     private ArrayList getListContrat() {
         try {
-            return DaoContrat.findAllCilentQuiOntContrat(ConnexionManager.conn());
+            return new DaoContrat().findAllCilentQuiOntContrat(ConnexionManager.conn());
         } catch (DaoSqlEx daoSqlEx) {
-            daoSqlEx.printStackTrace();
+            messageErr("ERR BD ", daoSqlEx.getMessage());
             return null;
         }catch (ExceptionMetier exceptionMetier) {
-            exceptionMetier.printStackTrace();
+            messageErr("Err ", exceptionMetier.getMessage());
             return null;
         }
     }
@@ -312,23 +311,23 @@ public class Accueil extends JFrame {
                 messageErr,
                 titleBox, JOptionPane.DEFAULT_OPTION);
     }
-
+    // recuperer liste client ou procpect de la BD
     private ArrayList getListPourEdit(Boolean isClient) {
         try {
             if (isClient) {
-                return DaoClient.findAll(ConnexionManager.conn());
+                return  new DaoClient().findAll(ConnexionManager.conn());
             } else {
-                return DaoProspect.findAll(ConnexionManager.conn());
+                return new DaoProspect().findAll(ConnexionManager.conn());
             }
         } catch (DaoSqlEx daoSqlEx) {
-            daoSqlEx.printStackTrace();
+            messageErr("ERR BD ", daoSqlEx.getMessage());
             return null;
         }catch (ExceptionMetier exceptionMetier){
-            exceptionMetier.printStackTrace();
+            messageErr("ERR  ", exceptionMetier.getMessage());
             return null;
         }
     }
-
+    // remplir combobox de clinet ou procpect
     private void rempilerComboBox(Boolean isClient) {
         if (listAficha == null || listAficha.getItemCount() == 0) {
             for (int i = 0; i < getListPourEdit(isClient).size(); i++) {

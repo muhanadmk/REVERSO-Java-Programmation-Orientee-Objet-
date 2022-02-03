@@ -121,16 +121,21 @@ public class Affichage extends JFrame {
     private ArrayList getListAfichge(Boolean flageClient) {
         try {
             if (flageClient) {
-                return DaoClient.findAll(ConnexionManager.conn());
+                return new DaoClient().findAll(ConnexionManager.conn());
             }else {
-                return DaoProspect.findAll(ConnexionManager.conn());
+                return new DaoProspect().findAll(ConnexionManager.conn());
             }
         } catch (DaoSqlEx sq) {
-           sq.printStackTrace();
+            messageErr("ERR BD", sq.getMessage());
         }catch (ExceptionMetier exceptionMetier){
-            exceptionMetier.printStackTrace();
+            messageErr("ERR BD", exceptionMetier.getMessage());
         }
         return null;
+    }
+    private void messageErr(String titleBox, String messageErr) {
+        JOptionPane.showConfirmDialog(null,
+                messageErr,
+                titleBox, JOptionPane.DEFAULT_OPTION);
     }
 }
 

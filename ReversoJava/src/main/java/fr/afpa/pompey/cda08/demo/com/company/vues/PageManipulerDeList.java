@@ -208,15 +208,14 @@ public class PageManipulerDeList extends JFrame {
                         if (err) {
                             try {
                                 if (flageClient) {
-                                    int id = DaoClient.save(ConnexionManager.conn(), client);
+                                    int id = new DaoClient().save(ConnexionManager.conn(), client);
                                     client.setId(id);
                                 } else {
-                                    int id = DaoProspect.save(ConnexionManager.conn(), prospect);
+                                    int id = new DaoProspect().save(ConnexionManager.conn(), prospect);
                                     prospect.setId(id);
                                 }
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
-                                daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
                             if (choix.toString().equals("CREATION")){
@@ -233,14 +232,13 @@ public class PageManipulerDeList extends JFrame {
                         if (isSuprimer == 0) {
                             try {
                                 if (flageClient) {
-                                    DaoClient.delete(ConnexionManager.conn(), societe.getId());
+                                    new DaoClient().delete(ConnexionManager.conn(), societe.getId());
                                 } else {
-                                    DaoProspect.delete(ConnexionManager.conn(), societe.getId());
+                                    new DaoProspect().delete(ConnexionManager.conn(), societe.getId());
                                 }
 
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
-                                daoSqlEx.printStackTrace();
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
                             applAccueil();

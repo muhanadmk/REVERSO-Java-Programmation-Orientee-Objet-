@@ -86,11 +86,15 @@ public class ContratsVue extends JFrame {
     private ArrayList getListContrats(int idClient) {
         ArrayList <Contrat> listContrats = new ArrayList();
         try {
-            listContrats = DaoContrat.findByIdClient(ConnexionManager.conn(),idClient);
+            listContrats = new DaoContrat().findByIdClient(ConnexionManager.conn(),idClient);
         } catch (DaoSqlEx sq) {
-            System.out.println(sq.fillInStackTrace());
+            messageErr("ERR BD", sq.getMessage());
         }
         return listContrats;
     }
-
+    private void messageErr(String titleBox, String messageErr) {
+        JOptionPane.showConfirmDialog(null,
+                messageErr,
+                titleBox, JOptionPane.DEFAULT_OPTION);
+    }
 }
