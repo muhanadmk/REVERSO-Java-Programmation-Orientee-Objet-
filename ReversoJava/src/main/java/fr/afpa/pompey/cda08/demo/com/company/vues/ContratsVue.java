@@ -5,6 +5,8 @@ import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Prospect;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -19,6 +21,8 @@ public class ContratsVue extends JFrame {
     private JTable contratsTable;
     private JPanel jPanel;
     private JScrollPane scrollable;
+    private static final Logger LOGGER = LogManager.getLogger(ContratsVue.class.getName());
+
 
     private String[][] contrats;
 
@@ -88,6 +92,7 @@ public class ContratsVue extends JFrame {
         try {
             listContrats = new DaoContrat().findByIdClient(ConnexionManager.conn(),idClient);
         } catch (DaoSqlEx sq) {
+            LOGGER.info("err BD", sq.getMessage());
             messageErr("ERR BD", sq.getMessage());
         }
         return listContrats;

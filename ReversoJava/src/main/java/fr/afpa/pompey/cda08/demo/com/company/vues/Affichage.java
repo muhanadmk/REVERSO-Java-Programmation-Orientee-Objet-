@@ -7,6 +7,8 @@ import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoSqlEx;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -26,9 +28,11 @@ public class Affichage extends JFrame {
     private JButton homeButton;
     private JScrollPane scrollpane;
     private String[][] data;
+    private static final Logger LOGGER = LogManager.getLogger(Affichage.class.getName());
 
 
-/**
+
+    /**
      * on récupère si client si non on traite le prospect
      *
      * @param flageClient
@@ -127,7 +131,10 @@ public class Affichage extends JFrame {
             }
         } catch (DaoSqlEx sq) {
             messageErr("ERR BD", sq.getMessage());
+            LOGGER.info("err BD", sq.getMessage());
+
         }catch (ExceptionMetier exceptionMetier){
+            LOGGER.info("err BD", exceptionMetier.getMessage());
             messageErr("ERR BD", exceptionMetier.getMessage());
         }
         return null;

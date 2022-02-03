@@ -163,14 +163,12 @@ public class PageManipulerDeList extends JFrame {
                         messageErr("message Err !!", ea.getMessage());
                     } catch (NumberFormatException n) {
                         err = false;
-                        n.printStackTrace();
                         messageErr("message Err !!", "vous devez ecrir une chiiffre pour nomber employer " +
                                 "et chiffre daffire");
                     } catch (Exception exception) {
                         err = false;
-                        exception.printStackTrace();
                         messageErr("message Err !!", "err System essyeer puls tard");
-                        LOGGER.fatal("err on ne pas prevu");
+                        LOGGER.fatal("err on ne pas prevu" + exception.getMessage());
                         LOGGER.info("freme basee de donnes");
                         System.exit(1);
                     }
@@ -196,7 +194,7 @@ public class PageManipulerDeList extends JFrame {
                         exception.printStackTrace();
                         err = false;
                         messageErr("message Err !!", "err System essyeer puls tard");
-                        LOGGER.fatal("err on ne pas prevu");
+                        LOGGER.fatal("err on ne pas prevu" + exception.getMessage());
                         LOGGER.info("freme basee de donnes");
                         System.exit(1);
                     }
@@ -217,6 +215,8 @@ public class PageManipulerDeList extends JFrame {
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
+                                LOGGER.info("err bd" + daoSqlEx.getMessage());
+
                             }
                             if (choix.toString().equals("CREATION")){
                                 affichageAccueilEtFermerLeEdit("vous avez bien cree");
@@ -239,6 +239,7 @@ public class PageManipulerDeList extends JFrame {
 
                             } catch (DaoSqlEx daoSqlEx) {
                                 err = false;
+                                LOGGER.info("err bd" + daoSqlEx.getMessage());
                                 messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
                             applAccueil();

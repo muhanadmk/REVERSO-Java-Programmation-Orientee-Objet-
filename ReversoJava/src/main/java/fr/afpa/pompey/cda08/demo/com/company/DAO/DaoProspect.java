@@ -50,7 +50,8 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         }catch (SQLException e ) {
-            e.printStackTrace();
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects essaiez ultiareemnt "+
+                    e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects "
             +"essaiez ultiareemnt");
         }
@@ -81,6 +82,8 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         }  catch (SQLException e ) {
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer le prospects" +
+            "essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer le prospects" +
                     "essaiez ultiareemnt");
         }
@@ -130,6 +133,8 @@ public class DaoProspect extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e ) {
+            LOGGER.info("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
+                    " cree un procpect essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
                     " cree un procpect essaiez ultiareemnt");
         }
@@ -147,7 +152,8 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
+                    " essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
                     " essaiez ultiareemnt");
         }
