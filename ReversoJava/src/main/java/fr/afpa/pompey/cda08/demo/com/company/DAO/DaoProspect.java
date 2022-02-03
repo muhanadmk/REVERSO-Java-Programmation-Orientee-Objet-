@@ -3,8 +3,8 @@ package fr.afpa.pompey.cda08.demo.com.company.DAO;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
+import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Prospect;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import org.apache.logging.log4j.LogManager;
@@ -13,11 +13,10 @@ import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.formatter;
 
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 
-public class DaoProspect {
+public class DaoProspect extends DAO {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
     private static PreparedStatement preparedStmt = null;
@@ -25,7 +24,7 @@ public class DaoProspect {
     public DaoProspect() {
     }
 
-    public static ArrayList<Prospect> findAll(Connection con) throws DaoSqlEx,ExceptionMetier {
+    public ArrayList<Prospect>findAll(Connection con) throws DaoSqlEx,ExceptionMetier {
         String query = "SELECT * FROM prospects";
         ArrayList<Prospect> listProspect = new ArrayList();
         try {
@@ -57,8 +56,7 @@ public class DaoProspect {
         }
         return listProspect;
     }
-
-    public static Prospect find(Connection con, int idProspect) throws DaoSqlEx,ExceptionMetier {
+    public Prospect find(Connection con, Integer idProspect) throws DaoSqlEx,ExceptionMetier {
         String sql = "SELECT * FROM prospects where idProspect=?";
         try {
             preparedStmt = con.prepareStatement(sql);
@@ -89,8 +87,9 @@ public class DaoProspect {
         return prospect;
     }
 
-    public static int save(Connection con, Prospect upProspect) throws DaoSqlEx {
-        int id=0;
+    public Integer save(Connection con, Object procpect) throws DaoSqlEx {
+        Prospect upProspect= ((Prospect) procpect);
+        Integer id=0;
         String query = null;
         if (upProspect.getId() == 0) {
             query = "insert into prospects (name_prospect, telephone, adresseMail, address, commentarie," +
@@ -137,7 +136,7 @@ public class DaoProspect {
         return id;
     }
 
-    public static void delete(Connection con, int IdProspect) throws DaoSqlEx {
+    public void delete(Connection con, Integer IdProspect) throws DaoSqlEx {
         String query = "delete from prospects where id_prospect = ?";
         try {
             preparedStmt = con.prepareStatement(query);
@@ -152,5 +151,15 @@ public class DaoProspect {
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
                     " essaiez ultiareemnt");
         }
+    }
+
+    @Override
+    ArrayList<Contrat> findByIdClient(Connection con, Integer idCilent) throws DaoSqlEx {
+        return null;
+    }
+
+    @Override
+    ArrayList<Client> findAllCilentQuiOntContrat(Connection con) throws DaoSqlEx, ExceptionMetier {
+        return null;
     }
 }

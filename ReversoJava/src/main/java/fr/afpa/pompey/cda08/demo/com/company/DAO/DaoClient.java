@@ -3,13 +3,14 @@ package fr.afpa.pompey.cda08.demo.com.company.DAO;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
+import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class DaoClient {
+public class DaoClient extends DAO {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
     private static PreparedStatement preparedStmt = null;
@@ -18,7 +19,7 @@ public class DaoClient {
     public DaoClient() {
     }
 
-    public static ArrayList<Client> findAll(Connection con) throws DaoSqlEx, ExceptionMetier {
+    public ArrayList<Client> findAll(Connection con) throws DaoSqlEx, ExceptionMetier {
         String query = "SELECT * FROM clients";
         ArrayList<Client> listClient = new ArrayList<>();
         try {
@@ -43,7 +44,7 @@ public class DaoClient {
         return listClient;
     }
 
-    public static Client find(Connection con, Integer idcliente) throws DaoSqlEx, ExceptionMetier {
+    public Client find(Connection con, Integer idcliente) throws DaoSqlEx, ExceptionMetier {
         try {
             String query = "SELECT * FROM `clients` WHERE ?";
             preparedStmt = con.prepareStatement(query);
@@ -56,7 +57,7 @@ public class DaoClient {
                         new Address(rs.getString("address"), "2", "2", "2"),
                         rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
             }
-            client.setListContrat(DaoContrat.findByIdClient(con, idcliente));
+            client.setListContrat(new DaoContrat().findByIdClient(con, idcliente));
             if (preparedStmt != null) {
                 preparedStmt.close();
             }
@@ -66,7 +67,8 @@ public class DaoClient {
         return client;
     }
 
-    public static int save(Connection con, Client Upclient) throws DaoSqlEx {
+    public Integer save(Connection con, Object client) throws DaoSqlEx {
+        Client Upclient = ((Client) client);
         int id = 0;
         String query = null;
         if (Upclient.getId() == 0) {
@@ -107,7 +109,7 @@ public class DaoClient {
         return id;
     }
 
-    public static void delete(Connection con, Integer IdClient) throws DaoSqlEx {
+    public void delete(Connection con, Integer IdClient) throws DaoSqlEx {
         String query = "delete from clients where Id_cliente = ?";
         try {
             preparedStmt = con.prepareStatement(query);
@@ -121,16 +123,19 @@ public class DaoClient {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent");
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
+
+
+    @Override
+    ArrayList<Contrat> findByIdClient(Connection con, Integer idCilent) throws DaoSqlEx {
+        return null;
+    }
+
+    @Override
+    ArrayList<Client> findAllCilentQuiOntContrat(Connection con) throws DaoSqlEx, ExceptionMetier {
+        return null;
+    }
 }
 
