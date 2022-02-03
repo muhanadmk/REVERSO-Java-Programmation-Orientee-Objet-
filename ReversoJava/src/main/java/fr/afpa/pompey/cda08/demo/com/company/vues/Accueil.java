@@ -105,6 +105,7 @@ public class Accueil extends JFrame {
                 listAficha.removeAllItems();
                 listAficha.setVisible(false);
                 contartsButton.setVisible(false);
+                afficherSonContrat.setVisible(false);
                 ClinetsQuiOntContra.removeAllItems();
                 ClinetsQuiOntContra.setVisible(false);
                 condtionAficheEdit = false;
@@ -231,28 +232,16 @@ public class Accueil extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ClinetsQuiOntContra.setVisible(true);
                 remplierClinetsQuiOntContrat();
-            }
-        });
-        ClinetsQuiOntContra.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (condtionAficheEdit){
-                    remplierClinetsQuiOntContrat();
-                    afficherSonContrat.setVisible(true);
+                if (condtionAficheEdit) {
+                    ClinetsQuiOntContra.setVisible(true);
+                    Client client = clientsContrat.get(ClinetsQuiOntContra.getSelectedIndex());
+                    ContratsVue contratsVue = new ContratsVue(client.getId());
+                    contratsVue.setVisible(true);
+                    dispose();
                 }
                 condtionAficheEdit = true;
             }
         });
-        afficherSonContrat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                Client client = clientsContrat.get(ClinetsQuiOntContra.getSelectedIndex());
-                ContratsVue contratsVue = new ContratsVue(client.getId());
-                contratsVue.setVisible(true);
-            }
-        });
-
         sortirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
