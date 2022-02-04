@@ -38,7 +38,13 @@ public class DaoContrat extends DAO{
 
     }
 
-
+    /**
+     * find le info de contra By Id Client
+     * @param con
+     * @param idCilent
+     * @return ArrayList<Contrat>
+     * @throws DaoSqlEx
+     */
     public ArrayList<Contrat> findByIdClient(Connection con, Integer idCilent) throws DaoSqlEx {
         ArrayList<Contrat> listContrat = new ArrayList<>();
         try {
@@ -62,6 +68,14 @@ public class DaoContrat extends DAO{
         }
         return listContrat;
     }
+
+    /**
+     * ArrayList<Client> qui dedans l id et raison sosiale
+     * @param con
+     * @return
+     * @throws DaoSqlEx
+     * @throws ExceptionMetier
+     */
     public ArrayList<Client> findAllCilentQuiOntContrat(Connection con) throws DaoSqlEx, ExceptionMetier {
         String query = "SELECT DISTINCT name_Client, Id_cliente  FROM `contrat` " +
                 "INNER JOIN clients ON contrat.idClient = clients.Id_cliente";

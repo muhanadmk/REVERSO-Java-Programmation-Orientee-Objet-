@@ -43,6 +43,7 @@ public class Accueil extends JFrame {
     private ArrayList <Client> clientsContrat = new ArrayList<>();
     private boolean flageClient = false;
     private boolean condtionAficheEdit = false;
+    private boolean condtionAficheContrat = false;
     private Accueil accueilFreme;
     private static final Logger LOGGER = LogManager.getLogger(Accueil.class.getName());
 
@@ -113,6 +114,7 @@ public class Accueil extends JFrame {
                 ClinetsQuiOntContra.removeAllItems();
                 ClinetsQuiOntContra.setVisible(false);
                 condtionAficheEdit = false;
+                condtionAficheContrat = false;
             }
         });
 
@@ -137,7 +139,6 @@ public class Accueil extends JFrame {
                     LOGGER.info("err BD", daoSqlEx.getMessage());
                     messageErr("err BD", daoSqlEx.getMessage());
                 }
-
             }
         });
 
@@ -239,14 +240,14 @@ public class Accueil extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ClinetsQuiOntContra.setVisible(true);
                 remplierClinetsQuiOntContrat();
-                if (condtionAficheEdit) {
+                if (condtionAficheContrat) {
                     ClinetsQuiOntContra.setVisible(true);
                     Client client = clientsContrat.get(ClinetsQuiOntContra.getSelectedIndex());
                     ContratsVue contratsVue = new ContratsVue(client.getId());
                     contratsVue.setVisible(true);
                     dispose();
                 }
-                condtionAficheEdit = true;
+                condtionAficheContrat = true;
             }
         });
         sortirButton.addActionListener(new ActionListener() {
@@ -257,6 +258,11 @@ public class Accueil extends JFrame {
         });
     }
     //recuperer tous les clients qui ont des contrats
+
+    /**
+     *
+     * @return lite du Cilent Qui Ont Contrat from BD
+     */
     private ArrayList getListContrat() {
         try {
             return new DaoContrat().findAllCilentQuiOntContrat(ConnexionManager.conn());
@@ -271,6 +277,10 @@ public class Accueil extends JFrame {
         }
     }
 
+    /**
+     * remplier  Clinets Qui Ont Contrat dans combobox de contrat "ClinetsQuiOntContra"
+     * et arrylist "clientsContrat"
+     */
     private void remplierClinetsQuiOntContrat() {
         if (ClinetsQuiOntContra == null || ClinetsQuiOntContra.getItemCount() == 0) {
             for (int i = 0; i < getListContrat().size(); i++) {
@@ -310,6 +320,12 @@ public class Accueil extends JFrame {
                 titleBox, JOptionPane.DEFAULT_OPTION);
     }
     // recuperer liste client ou procpect de la BD
+
+    /**
+     * getList clients ou porcpect Pour Edit from BD
+     * @param isClient
+     * @return
+     */
     private ArrayList getListPourEdit(Boolean isClient) {
         try {
             if (isClient) {

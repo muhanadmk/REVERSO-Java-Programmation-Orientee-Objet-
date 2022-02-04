@@ -35,6 +35,7 @@ public class ContratsVue extends JFrame {
         String[] columnNames = new String[]{"IdContrat", "IdClient", "libellé de contrat", "montant de contrat "};
 
         // définir un modle Jtable
+
         TableModel dataModel = new AbstractTableModel() {
             public int getColumnCount() {
                 return columnNames.length;
@@ -53,6 +54,7 @@ public class ContratsVue extends JFrame {
             }
         };
         contratsTable.setModel(dataModel);
+
         // on rempile le tableau en utilisant la taille de la list qu'on a récupéré
         if (getListContrats(idClient) != null || !getListContrats(idClient).isEmpty()) {
             contrats = new String[getListContrats(idClient).size()][4];
@@ -87,15 +89,20 @@ public class ContratsVue extends JFrame {
             }
         });
     }
-    private ArrayList getListContrats(int idClient) {
-        ArrayList <Contrat> listContrats = new ArrayList();
+
+    /**
+     * get List of Contrats pour tous les client
+     * @param idClient
+     * @return
+     */
+    private ArrayList<Contrat>getListContrats(int idClient) {
         try {
-            listContrats = new DaoContrat().findByIdClient(ConnexionManager.conn(),idClient);
+           return new DaoContrat().findByIdClient(ConnexionManager.conn(),idClient);
         } catch (DaoSqlEx sq) {
             LOGGER.info("err BD", sq.getMessage());
             messageErr("ERR BD", sq.getMessage());
         }
-        return listContrats;
+        return null;
     }
     private void messageErr(String titleBox, String messageErr) {
         JOptionPane.showConfirmDialog(null,

@@ -273,9 +273,9 @@ public class PageManipulerDeList extends JFrame {
     }
 
 
-/**
-     * remplie le data qui sont partger
-     *
+    /**
+     * instert objetc Societe qui vinne de page accueil into TextFiled
+     * @param flageClient
      * @param societe
      */
 

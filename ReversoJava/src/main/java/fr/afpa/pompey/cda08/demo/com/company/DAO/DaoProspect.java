@@ -15,7 +15,11 @@ import static fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire.formatter;
 import java.sql.*;
 import java.util.ArrayList;
 
-
+/**
+ *
+ *    class DaoClient qui gere aller router avel le Bd en cas de Prospect
+ *
+ */
 public class DaoProspect extends DAO {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
@@ -24,6 +28,13 @@ public class DaoProspect extends DAO {
     public DaoProspect() {
     }
 
+    /**
+     * findAll pour recuperer les prospects de BD
+     * @param con
+     * @return ArrayList<Prospect>
+     * @throws DaoSqlEx
+     * @throws ExceptionMetier
+     */
     public ArrayList<Prospect>findAll(Connection con) throws DaoSqlEx,ExceptionMetier {
         String query = "SELECT * FROM prospects";
         ArrayList<Prospect> listProspect = new ArrayList();
@@ -57,6 +68,15 @@ public class DaoProspect extends DAO {
         }
         return listProspect;
     }
+
+    /**
+     * cette methode recuperate un seul Prospect en ut lisant son Id
+     * @param con
+     * @param idProspect
+     * @return prospect
+     * @throws DaoSqlEx
+     * @throws ExceptionMetier
+     */
     public Prospect find(Connection con, Integer idProspect) throws DaoSqlEx,ExceptionMetier {
         String sql = "SELECT * FROM prospects where idProspect=?";
         try {
@@ -90,6 +110,13 @@ public class DaoProspect extends DAO {
         return prospect;
     }
 
+    /**
+     * cette methode cree ou modifier un seul client
+     * @param con
+     * @param procpect
+     * @return id de client en cas cree
+     * @throws DaoSqlEx
+     */
     public Integer save(Connection con, Object procpect) throws DaoSqlEx {
         Prospect upProspect= ((Prospect) procpect);
         Integer id=0;
@@ -141,6 +168,12 @@ public class DaoProspect extends DAO {
         return id;
     }
 
+    /**
+     * cette methode supprimer un seul prospect en utlisant son Id
+     * @param con
+     * @param IdProspect
+     * @throws DaoSqlEx
+     */
     public void delete(Connection con, Integer IdProspect) throws DaoSqlEx {
         String query = "delete from prospects where id_prospect = ?";
         try {

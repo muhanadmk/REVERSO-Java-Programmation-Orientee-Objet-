@@ -10,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 
+/**
+ *  class DaoClient qui gere aller router avel le Bd en cas de CLient
+ */
 public class DaoClient extends DAO {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
@@ -19,6 +22,14 @@ public class DaoClient extends DAO {
     public DaoClient() {
     }
 
+    /**
+     * findAll pour recuperer les Cilents de BD
+     *
+     * @param con
+     * @return ArrayList<Client>
+     * @throws DaoSqlEx
+     * @throws ExceptionMetier
+     */
     public ArrayList<Client> findAll(Connection con) throws DaoSqlEx, ExceptionMetier {
         String query = "SELECT * FROM clients";
         ArrayList<Client> listClient = new ArrayList<>();
@@ -44,6 +55,14 @@ public class DaoClient extends DAO {
         return listClient;
     }
 
+    /**
+     * cette methode recuperate un seul client en ut lisant son Id
+     * @param con
+     * @param idcliente
+     * @return object de client
+     * @throws DaoSqlEx
+     * @throws ExceptionMetier
+     */
     public Client find(Connection con, Integer idcliente) throws DaoSqlEx, ExceptionMetier {
         try {
             String query = "SELECT * FROM `clients` WHERE ?";
@@ -68,6 +87,13 @@ public class DaoClient extends DAO {
         return client;
     }
 
+    /**
+     * cette methode cree ou modifier un seul client
+     * @param con
+     * @param client
+     * @return id de client en cas cree
+     * @throws DaoSqlEx
+     */
     public Integer save(Connection con, Object client) throws DaoSqlEx {
         Client Upclient = ((Client) client);
         int id = 0;
@@ -112,6 +138,12 @@ public class DaoClient extends DAO {
         return id;
     }
 
+    /**
+     * cette methode supprimer un seul client en utlisant son Id
+     * @param con
+     * @param IdClient
+     * @throws DaoSqlEx
+     */
     public void delete(Connection con, Integer IdClient) throws DaoSqlEx {
         String query = "delete from clients where Id_cliente = ?";
         try {
