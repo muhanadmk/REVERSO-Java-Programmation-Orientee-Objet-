@@ -1,6 +1,7 @@
 package fr.afpa.pompey.cda08.demo.com.company.DAO;
 
 
+import fr.afpa.pompey.cda08.demo.com.company.metier.DaoSqlEx;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,24 +18,23 @@ public class ConnexionManager {
 
     private static Connection connexionBD = null;
 
-    public static Connection conn() throws DaoSqlEx {
-        final Properties dataProperties = new Properties();
-        try {
-            dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
-        } catch (IOException e) {
-            LOGGER.fatal("err dans le parm de connexion de BD" + e.getMessage());
-            throw new DaoSqlEx("err dans le parm de connexion de BD");
-        }
-        try {
-            connexionBD = DriverManager.getConnection(
-                    dataProperties.getProperty("url"),
-                    dataProperties.getProperty("login"),
-                    dataProperties.getProperty("password")
-            );
-            LOGGER.info("connexionBD a russie");
-        } catch (SQLException e) {
-            LOGGER.fatal("err dans le connexion de BD" + e.getMessage());
-            throw new DaoSqlEx("err dans le connexion de BD");
+    public static Connection getConnexionBD() throws DaoSqlEx {
+        if (connexionBD == null){
+            try {
+                final Properties dataProperties = new Properties();
+                dataProperties.load(ConnexionManager.class.getClassLoader().getResourceAsStream("database.properties"));
+                connexionBD = DriverManager.getConnection(
+                        dataProperties.getProperty("url"),
+                        dataProperties.getProperty("login"),
+                        dataProperties.getProperty("password")
+                );
+            } catch (SQLException e) {
+                LOGGER.fatal("connexion échouer de BD " + e.getMessage());
+                throw new DaoSqlEx("connexion échouer de BD l'App va fermer", 5);
+            }catch (IOException e) {
+                LOGGER.fatal("err dans le parm de connexion de BD dans le fichier database.properties" + e.getMessage());
+                throw new DaoSqlEx("connexion échouer de BD l'App va fermer", 5);
+            }
         }
         return connexionBD;
     }
@@ -45,9 +45,9 @@ public class ConnexionManager {
             public void run()
             {
                 try {
-                    if (ConnexionManager.conn() != null) {
+                    if (ConnexionManager.getConnexionBD() != null) {
                         try {
-                            ConnexionManager.conn().close();
+                            ConnexionManager.getConnexionBD().close();
                             LOGGER.info("Database fermée");
                         } catch (SQLException ex) {
                             LOGGER.fatal(ex.getMessage());

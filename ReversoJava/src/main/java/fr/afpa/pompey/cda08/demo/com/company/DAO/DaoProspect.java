@@ -1,10 +1,7 @@
 package fr.afpa.pompey.cda08.demo.com.company.DAO;
 
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Prospect;
+import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 import fr.afpa.pompey.cda08.demo.com.company.utile.ChoixUtilisateur;
 import fr.afpa.pompey.cda08.demo.com.company.utile.Utilitaire;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +17,7 @@ import java.util.ArrayList;
  *    class DaoClient qui gere aller router avel le Bd en cas de Prospect
  *
  */
-public class DaoProspect extends DAO {
+public class DaoProspect extends DAO<Prospect> {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
     private static PreparedStatement preparedStmt = null;
@@ -30,16 +27,15 @@ public class DaoProspect extends DAO {
 
     /**
      * findAll pour recuperer les prospects de BD
-     * @param con
      * @return ArrayList<Prospect>
      * @throws DaoSqlEx
      * @throws ExceptionMetier
      */
-    public ArrayList<Prospect>findAll(Connection con) throws DaoSqlEx,ExceptionMetier {
+    public ArrayList<Prospect>findAll() throws DaoSqlEx,ExceptionMetier, Exception {
         String query = "SELECT * FROM prospects";
         ArrayList<Prospect> listProspect = new ArrayList();
         try {
-            stmt = con.createStatement();
+            stmt = ConnexionManager.getConnexionBD().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 byte interesse = rs.getByte("interesse");
@@ -61,6 +57,7 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         }catch (SQLException e ) {
+            e.printStackTrace();
             LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects essaiez ultiareemnt "+
                     e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les prospects "
@@ -71,16 +68,15 @@ public class DaoProspect extends DAO {
 
     /**
      * cette methode recuperate un seul Prospect en ut lisant son Id
-     * @param con
      * @param idProspect
      * @return prospect
      * @throws DaoSqlEx
      * @throws ExceptionMetier
      */
-    public Prospect find(Connection con, Integer idProspect) throws DaoSqlEx,ExceptionMetier {
-        String sql = "SELECT * FROM prospects where idProspect=?";
+    public Prospect find(Integer idProspect) throws DaoSqlEx,ExceptionMetier, Exception {
+        String sql = "SELECT * FROM prospects where id_prospect = ?";
         try {
-            preparedStmt = con.prepareStatement(sql);
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(sql);
             preparedStmt.setInt(1, idProspect);
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
@@ -102,8 +98,7 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         }  catch (SQLException e ) {
-            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer le prospects" +
-            "essaiez ultiareemnt" + e.getMessage());
+            e.printStackTrace();
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer le prospects" +
                     "essaiez ultiareemnt");
         }
@@ -112,13 +107,11 @@ public class DaoProspect extends DAO {
 
     /**
      * cette methode cree ou modifier un seul client
-     * @param con
-     * @param procpect
+     * @param upProspect
      * @return id de client en cas cree
      * @throws DaoSqlEx
      */
-    public Integer save(Connection con, Object procpect) throws DaoSqlEx {
-        Prospect upProspect= ((Prospect) procpect);
+    public Integer save(Prospect upProspect) throws DaoSqlEx, Exception {
         Integer id=0;
         String query = null;
         if (upProspect.getId() == 0) {
@@ -130,7 +123,7 @@ public class DaoProspect extends DAO {
                     "DateDeProspection=?,interesse=?  WHERE  id_prospect = ?";
         }
         try {
-            preparedStmt = con.prepareStatement(query,
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStmt.setString(1, upProspect.getSociale());
             preparedStmt.setString(2, upProspect.getTelephone());
@@ -160,8 +153,6 @@ public class DaoProspect extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e ) {
-            LOGGER.info("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
-                    " cree un procpect essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
                     " cree un procpect essaiez ultiareemnt");
         }
@@ -174,10 +165,10 @@ public class DaoProspect extends DAO {
      * @param IdProspect
      * @throws DaoSqlEx
      */
-    public void delete(Connection con, Integer IdProspect) throws DaoSqlEx {
+    public void delete(Integer IdProspect) throws DaoSqlEx, Exception{
         String query = "delete from prospects where id_prospect = ?";
         try {
-            preparedStmt = con.prepareStatement(query);
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(query);
             preparedStmt.setInt(1, IdProspect);
             // execute the preparedstatement
             preparedStmt.execute();
@@ -185,20 +176,10 @@ public class DaoProspect extends DAO {
                 stmt.close();
             }
         } catch (SQLException e) {
-            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
-                    " essaiez ultiareemnt" + e.getMessage());
-            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a delete prospect" +
+            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a delete prospect " +
                     " essaiez ultiareemnt");
         }
     }
 
-    @Override
-    ArrayList<Contrat> findByIdClient(Connection con, Integer idCilent) throws DaoSqlEx {
-        return null;
-    }
 
-    @Override
-    ArrayList<Client> findAllCilentQuiOntContrat(Connection con) throws DaoSqlEx, ExceptionMetier {
-        return null;
-    }
 }

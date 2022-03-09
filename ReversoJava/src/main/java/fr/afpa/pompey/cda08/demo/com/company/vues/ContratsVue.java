@@ -1,10 +1,7 @@
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
 import fr.afpa.pompey.cda08.demo.com.company.DAO.*;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Prospect;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Societe;
+import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,18 +18,20 @@ public class ContratsVue extends JFrame {
     private JTable contratsTable;
     private JPanel jPanel;
     private JScrollPane scrollable;
+    private JLabel labalAnnonceVideListe;
     private static final Logger LOGGER = LogManager.getLogger(ContratsVue.class.getName());
 
 
     private String[][] contrats;
 
-    public ContratsVue(int idClient) {
+    public ContratsVue(int idClient, String nomClient) {
 
         setSize(800, 600);
         setContentPane(contentPane);
         scrollable.setVisible(true);
         // le column Names de Jtable
-        String[] columnNames = new String[]{"IdContrat", "IdClient", "libellé de contrat", "montant de contrat "};
+
+        String[] columnNames = new String[]{"IdContrat", "nom Client", "libellé de contrat", "montant de contrat "};
 
         // définir un modle Jtable
 
@@ -62,13 +61,12 @@ public class ContratsVue extends JFrame {
                 for (int j = 0; j < 4; j++) {
                     Contrat contrat = (Contrat) getListContrats(idClient).get(i);
                     contrats[i][j++] = String.valueOf(contrat.getId());
-                    contrats[i][j++] = String.valueOf(contrat.getIdClient());
+                    contrats[i][j++] = nomClient;
                     contrats[i][j++] = contrat.getLibelleDeContrat();
                     contrats[i][j++] = String.valueOf(contrat.getMontantDeContrat());
                 }
             }
-        }
-    else {
+        } else {
             JOptionPane.showConfirmDialog(null,
                     "vous avez rine a afichier",
                     "message de Erreur", JOptionPane.DEFAULT_OPTION);
@@ -79,7 +77,6 @@ public class ContratsVue extends JFrame {
                 dispose();
                 Accueil accueil = new Accueil();
                 accueil.setVisible(true);
-                accueil.getListAficha().setVisible(false);
             }
         });
         sortirButton.addActionListener(new ActionListener() {
@@ -92,18 +89,28 @@ public class ContratsVue extends JFrame {
 
     /**
      * get List of Contrats pour tous les client
+     *
      * @param idClient
      * @return
      */
-    private ArrayList<Contrat>getListContrats(int idClient) {
+
+    //pour récupérer tout les contrats d'un seul client
+    private ArrayList<Contrat> getListContrats(int idClient) {
         try {
-           return new DaoContrat().findByIdClient(ConnexionManager.conn(),idClient);
+            return new DaoContrat().findByIdClient(idClient);
         } catch (DaoSqlEx sq) {
-            LOGGER.info("err BD", sq.getMessage());
             messageErr("ERR BD", sq.getMessage());
+        }catch (Exception ex) {
+            LOGGER.fatal("err non prévue " + ex.getMessage());
+            messageErr("err non prévue", "on doit femer l'app");
+            System.exit(1);
         }
         return null;
     }
+
+
+    //pour afficher msg personnaliser aux utilisateurs
+
     private void messageErr(String titleBox, String messageErr) {
         JOptionPane.showConfirmDialog(null,
                 messageErr,

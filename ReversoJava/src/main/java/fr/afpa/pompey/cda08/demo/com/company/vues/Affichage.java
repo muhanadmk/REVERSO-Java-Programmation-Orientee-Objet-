@@ -4,7 +4,7 @@ package fr.afpa.pompey.cda08.demo.com.company.vues;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
 import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
-import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoSqlEx;
+import fr.afpa.pompey.cda08.demo.com.company.metier.DaoSqlEx;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +31,6 @@ public class Affichage extends JFrame {
     private static final Logger LOGGER = LogManager.getLogger(Affichage.class.getName());
 
 
-
     /**
      * on récupère si client si non on traite le prospect
      *
@@ -45,8 +44,9 @@ public class Affichage extends JFrame {
         setSize(800, 600);
         setContentPane(contentPane);
         scrollpane.setVisible(true);
-        String[] columnNames;
+
         // le column Names de Jtable
+        String[] columnNames;
         if (flageClient) {
             columnNames = new String[]{"ID", "raison sociale", "Email", "Téléphone", "Address", "chiffre d’affaire",
                     "nombre d'employé"};
@@ -77,39 +77,33 @@ public class Affichage extends JFrame {
 
         // on rempile le tableau en utilisant la taille de la list qu'on a récupéré
         if (getListAfichge(flageClient) != null || !(getListAfichge(flageClient).isEmpty())) {
-        data = new String[getListAfichge(flageClient).size()][7];
-        for (int i = 0; i < getListAfichge(flageClient).size(); i++) {
-            for (int j = 0; j < 7; j++) {
-                Societe societe = (Societe) getListAfichge(flageClient).get(i);
-                data[i][j++] = String.valueOf(societe.getId());
-                data[i][j++] = societe.getSociale();
-                data[i][j++] = societe.getAdresseMail();
-                data[i][j++] = societe.getTelephone();
-                data[i][j++] = societe.getAddress().getNumeroDeRue() + " " + societe.getAddress().getNomDeRue() +
-                        " " + societe.getAddress().getVille() + " " + societe.getAddress().getCodePostal();
-                if (flageClient) {
-                    Client client = (Client) getListAfichge(flageClient).get(i);
-                    data[i][j++] = String.valueOf(client.getLeChiffreDaffaire());
-                    data[i][j++] = String.valueOf(client.getLeNombreDemployes());
-                } else {
-                    Prospect prospect = (Prospect) getListAfichge(flageClient).get(i);
-                    data[i][j++] = String.valueOf(prospect.getLaDateDeProspection());
-                    data[i][j++] = String.valueOf(prospect.getInteresse());
+            data = new String[getListAfichge(flageClient).size()][7];
+            for (int i = 0; i < getListAfichge(flageClient).size(); i++) {
+                for (int j = 0; j < 7; j++) {
+                    Societe societe = (Societe) getListAfichge(flageClient).get(i);
+                    data[i][j++] = String.valueOf(societe.getId());
+                    data[i][j++] = societe.getSociale();
+                    data[i][j++] = societe.getAdresseMail();
+                    data[i][j++] = societe.getTelephone();
+                    data[i][j++] = societe.getAddress().getNumeroDeRue() + " " + societe.getAddress().getNomDeRue() +
+                            " " + societe.getAddress().getVille() + " " + societe.getAddress().getCodePostal();
+                    if (flageClient) {
+                        Client client = (Client) getListAfichge(flageClient).get(i);
+                        data[i][j++] = String.valueOf(client.getLeChiffreDaffaire());
+                        data[i][j++] = String.valueOf(client.getLeNombreDemployes());
+                    } else {
+                        Prospect prospect = (Prospect) getListAfichge(flageClient).get(i);
+                        data[i][j++] = String.valueOf(prospect.getLaDateDeProspection());
+                        data[i][j++] = String.valueOf(prospect.getInteresse());
+                    }
                 }
             }
         }
-         }
-        else {
-            JOptionPane.showConfirmDialog(null,
-                    "vous avez rine a afichier",
-                    "message de Erreur", JOptionPane.DEFAULT_OPTION);
-        }
+
+
         homeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                Accueil accueil = new Accueil();
-                accueil.setVisible(true);
-                accueil.getListAficha().setVisible(false);
+                retourVersAccueil();
             }
         });
         sortirButton.addActionListener(new ActionListener() {
@@ -125,20 +119,36 @@ public class Affichage extends JFrame {
     private ArrayList getListAfichge(Boolean flageClient) {
         try {
             if (flageClient) {
-                return new DaoClient().findAll(ConnexionManager.conn());
-            }else {
-                return new DaoProspect().findAll(ConnexionManager.conn());
+                return new DaoClient().findAll();
+            } else {
+                return new DaoProspect().findAll();
             }
         } catch (DaoSqlEx sq) {
-            messageErr("ERR BD", sq.getMessage());
-            LOGGER.info("err BD", sq.getMessage());
-
-        }catch (ExceptionMetier exceptionMetier){
-            LOGGER.info("err BD", exceptionMetier.getMessage());
-            messageErr("ERR BD", exceptionMetier.getMessage());
+            if (sq.getGravite() != 5) {
+                messageErr("err basse de donne ", sq.getMessage());
+            } else {
+                messageErr("message Err !!", "err System BD on doit fermer l'App");
+                LOGGER.fatal("err on ne pas prevu " + sq.getMessage());
+                System.exit(1);
+            }
+        } catch (ExceptionMetier exceptionMetier) {
+            messageErr("ERR BD ", exceptionMetier.getMessage());
+        }catch (Exception ex) {
+            LOGGER.fatal("err non prévue " + ex.getMessage());
+            messageErr("err non prévue", "on doit femer l'app");
+            System.exit(1);
         }
         return null;
     }
+
+//pour fermer cette page et retourner à la page d'accueil
+    private void retourVersAccueil() {
+        dispose();
+        Accueil accueil = new Accueil();
+        accueil.setVisible(true);
+    }
+
+    //pour afficher msg personnaliser aux utilisateurs
     private void messageErr(String titleBox, String messageErr) {
         JOptionPane.showConfirmDialog(null,
                 messageErr,

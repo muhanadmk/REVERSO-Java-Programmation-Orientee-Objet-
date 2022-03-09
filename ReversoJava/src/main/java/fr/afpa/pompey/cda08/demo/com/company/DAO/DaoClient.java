@@ -3,7 +3,7 @@ package fr.afpa.pompey.cda08.demo.com.company.DAO;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Address;
 import fr.afpa.pompey.cda08.demo.com.company.metier.Client;
-import fr.afpa.pompey.cda08.demo.com.company.metier.Contrat;
+import fr.afpa.pompey.cda08.demo.com.company.metier.DaoSqlEx;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  *  class DaoClient qui gere aller router avel le Bd en cas de CLient
  */
-public class DaoClient extends DAO {
+public class DaoClient extends DAO<Client>  {
     private static final Logger LOGGER = LogManager.getLogger(DaoClient.class.getName());
     private static Statement stmt = null;
     private static PreparedStatement preparedStmt = null;
@@ -30,11 +30,11 @@ public class DaoClient extends DAO {
      * @throws DaoSqlEx
      * @throws ExceptionMetier
      */
-    public ArrayList<Client> findAll(Connection con) throws DaoSqlEx, ExceptionMetier {
+    public ArrayList<Client> findAll() throws DaoSqlEx, ExceptionMetier, Exception {
         String query = "SELECT * FROM clients";
         ArrayList<Client> listClient = new ArrayList<>();
         try {
-            stmt = con.createStatement();
+            stmt = ConnexionManager.getConnexionBD().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 client =
@@ -43,13 +43,13 @@ public class DaoClient extends DAO {
                                 rs.getString("commentarie"),
                                 new Address(rs.getString("address"), "2", "2", "2"),
                                 rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
+                client.setListContrat(new DaoContrat().findByIdClient(client.getId()));
                 listClient.add(client);
             }
             if (stmt != null) {
                 stmt.close();
             }
         } catch (SQLException e) {
-            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents " + e.getMessage());
             throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer les Cilents");
         }
         return listClient;
@@ -63,10 +63,10 @@ public class DaoClient extends DAO {
      * @throws DaoSqlEx
      * @throws ExceptionMetier
      */
-    public Client find(Connection con, Integer idcliente) throws DaoSqlEx, ExceptionMetier {
+    public Client find(Integer idcliente) throws DaoSqlEx, ExceptionMetier, Exception {
         try {
-            String query = "SELECT * FROM `clients` WHERE ?";
-            preparedStmt = con.prepareStatement(query);
+            String query = "SELECT * FROM `clients` WHERE Id_cliente = ?";
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(query);
             preparedStmt.setInt(1, idcliente);
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
@@ -76,13 +76,12 @@ public class DaoClient extends DAO {
                         new Address(rs.getString("address"), "2", "2", "2"),
                         rs.getDouble("Chiffre_daffaire"), rs.getInt("Nombre_demployes"));
             }
-            client.setListContrat(new DaoContrat().findByIdClient(con, idcliente));
+            client.setListContrat(new DaoContrat().findByIdClient(idcliente));
             if (preparedStmt != null) {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
-            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a recuperer le Cilente" + e.getMessage());
-            throw new DaoSqlEx("error base de données essaiez ultiareemnt");
+            throw new DaoSqlEx("err Basee de donnees ,vous n'avez pas reussi a recuperer le Cilente");
         }
         return client;
     }
@@ -90,12 +89,12 @@ public class DaoClient extends DAO {
     /**
      * cette methode cree ou modifier un seul client
      * @param con
-     * @param client
+     * @param Upclient
      * @return id de client en cas cree
      * @throws DaoSqlEx
      */
-    public Integer save(Connection con, Object client) throws DaoSqlEx {
-        Client Upclient = ((Client) client);
+    @Override
+    public Integer save( Client Upclient) throws DaoSqlEx, Exception {
         int id = 0;
         String query = null;
         if (Upclient.getId() == 0) {
@@ -106,7 +105,7 @@ public class DaoClient extends DAO {
                     "Nombre_demployes=?,Chiffre_daffaire=?  WHERE  Id_cliente = ?";
         }
         try {
-            preparedStmt = con.prepareStatement(query,
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStmt.setString(1, Upclient.getSociale());
             preparedStmt.setString(2, Upclient.getTelephone());
@@ -130,10 +129,8 @@ public class DaoClient extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
-            LOGGER.info("err Basee de donnees ,vous n'avez pas reussi a ous n'avez pas reussi a modifier ou" +
-                    "cree un Cilente essaiez ultiareemnt" + e.getMessage());
             throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a modifier ou" +
-                    " cree un Cilente essaiez ultiareemnt");
+                    "cree un Cilente essaiez ultiareemnt");
         }
         return id;
     }
@@ -144,10 +141,10 @@ public class DaoClient extends DAO {
      * @param IdClient
      * @throws DaoSqlEx
      */
-    public void delete(Connection con, Integer IdClient) throws DaoSqlEx {
+    public void delete(Integer IdClient) throws DaoSqlEx , Exception{
         String query = "delete from clients where Id_cliente = ?";
         try {
-            preparedStmt = con.prepareStatement(query);
+            preparedStmt = ConnexionManager.getConnexionBD().prepareStatement(query);
             preparedStmt.setInt(1, IdClient);
 
             // execute the preparedstatement
@@ -156,21 +153,8 @@ public class DaoClient extends DAO {
                 preparedStmt.close();
             }
         } catch (SQLException e) {
-            LOGGER.info("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent" + e.getMessage());
-            throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a delete ou Cilent");
+            throw new DaoSqlEx("error Basee de donnees ,vous n'avez pas reussi a delete ou Client");
         }
-    }
-
-
-
-    @Override
-    ArrayList<Contrat> findByIdClient(Connection con, Integer idCilent) throws DaoSqlEx {
-        return null;
-    }
-
-    @Override
-    ArrayList<Client> findAllCilentQuiOntContrat(Connection con) throws DaoSqlEx, ExceptionMetier {
-        return null;
     }
 }
 

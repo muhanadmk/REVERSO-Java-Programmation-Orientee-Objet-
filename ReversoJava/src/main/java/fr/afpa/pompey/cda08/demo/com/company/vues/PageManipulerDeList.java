@@ -1,10 +1,7 @@
 
 package fr.afpa.pompey.cda08.demo.com.company.vues;
 
-import fr.afpa.pompey.cda08.demo.com.company.DAO.ConnexionManager;
-import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoClient;
-import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoProspect;
-import fr.afpa.pompey.cda08.demo.com.company.DAO.DaoSqlEx;
+import fr.afpa.pompey.cda08.demo.com.company.DAO.*;
 import fr.afpa.pompey.cda08.demo.com.company.exception.metier.ExceptionMetier;
 import fr.afpa.pompey.cda08.demo.com.company.metier.*;
 import fr.afpa.pompey.cda08.demo.com.company.utile.*;
@@ -62,8 +59,7 @@ public class PageManipulerDeList extends JFrame {
     private static final Logger LOGGER = LogManager.getLogger(PageManipulerDeList.class.getName());
 
 
-
-/**
+    /**
      * on récupère la paramètre si le choix de user un client si le falge no alors on travaille sur prospect
      *
      * @param flageClient
@@ -71,7 +67,7 @@ public class PageManipulerDeList extends JFrame {
      * @throws ExceptionMetier
      */
 
-    public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, Societe societe) throws DaoSqlEx {
+    public PageManipulerDeList(boolean flageClient, ChoixUtilisateur.choix choix, Integer idSociete) {
 
         pageManipulerFere = this;
         setContentPane(contentPane);
@@ -88,7 +84,6 @@ public class PageManipulerDeList extends JFrame {
             interesseProspect.addItem(ChoixUtilisateur.chioxInteresser.NON);
             // choixInteresseProspect par deflet oui
             choixInteresseProspect = ChoixUtilisateur.chioxInteresser.OUI;
-
             interesseProspect.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     switch (interesseProspect.getSelectedItem().toString()) {
@@ -109,10 +104,10 @@ public class PageManipulerDeList extends JFrame {
 
 
 /**
-         * qu'on récupère de la méthode chiox de class
-         * choix utilisateurs
-         * on affiche où on désactivé des textes filde solon le choix
-         */
+ * qu'on récupère de la méthode chiox de class
+ * choix utilisateurs
+ * on affiche où on désactivé des textes filde solon le choix
+ */
 
 
         switch (choix.toString()) {
@@ -125,11 +120,11 @@ public class PageManipulerDeList extends JFrame {
                 break;
             case "MODIFIER":
                 submitButton.setText("MODIFIER");
-                instertSocieteTextFiled(flageClient, societe);
+                instertSocieteTextFiled(flageClient, idSociete);
                 id.setEnabled(false);
                 break;
             case "SUPRIMER":
-                instertSocieteTextFiled(flageClient, societe);
+                instertSocieteTextFiled(flageClient, idSociete);
                 submitButton.setText("SUPRIMER");
                 setEnabledEnCasDeSuprimer(false);
                 break;
@@ -137,121 +132,95 @@ public class PageManipulerDeList extends JFrame {
 
 
 /**
-         * cette btn sera selon le choix de user si créer ou supprimer ou modifier
-         */
+ * cette btn sera selon le choix de user si créer ou supprimer ou modifier
+ */
 
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int idCerr = 0;
-                if (flageClient) {
-
-                    try {
-                        int idCerrClient = 0;
-                        if (societe != null) {
-                            idCerrClient = societe.getId();
-                        }
-                        client = new Client(idCerrClient,
+                try {
+                    if (flageClient) {
+                        client = new Client(idSociete,
                                 nomSociale.getText(), email.getText(), telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(), cd.getText()
                                         , ville.getText()),
                                 Double.parseDouble(chiffreDaffaire.getText()),
                                 Long.parseLong(nombreDeEmployes.getText()));
+                        System.out.println(client.getId() + " client.getId() ");
                         err = true;
-                    } catch (ExceptionMetier ea) {
-                        err = false;
-                        messageErr("message Err !!", ea.getMessage());
-                    } catch (NumberFormatException n) {
-                        err = false;
-                        messageErr("message Err !!", "vous devez ecrir une chiiffre pour nomber employer " +
-                                "et chiffre daffire");
-                    } catch (Exception exception) {
-                        err = false;
-                        messageErr("message Err !!", "err System essyeer puls tard");
-                        LOGGER.fatal("err on ne pas prevu" + exception.getMessage());
-                        LOGGER.info("freme basee de donnes");
-                        System.exit(1);
-                    }
-                } else {
-                    try {
-                        int idCerrPorcpect = 0;
-                        if (societe != null) {
-                            idCerrPorcpect = societe.getId();
-                        }
-                        prospect = new Prospect(idCerrPorcpect, nomSociale.getText(), email.getText(),
+                    } else {
+                        prospect = new Prospect(idSociete, nomSociale.getText(), email.getText(),
                                 telephone.getText(), commentaire.getText(),
                                 new Address(numeroDeRue.getText(), NomDeRue.getText(),
                                         cd.getText(), ville.getText()),
                                 Utilitaire.dateInput(date.getText()), choixInteresseProspect);
                         err = true;
-                    } catch (ExceptionMetier ea) {
-                        err = false;
-                        messageErr("message Err !!", ea.getMessage());
-                    } catch (DateTimeParseException dataFormatException) {
-                        err = false;
-                        messageErr("message Err !!", "mauvaise date!! ecrire un format de date comme dd/MM/yyyy");
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                        err = false;
-                        messageErr("message Err !!", "err System essyeer puls tard");
-                        LOGGER.fatal("err on ne pas prevu" + exception.getMessage());
-                        LOGGER.info("freme basee de donnes");
-                        System.exit(1);
                     }
-                }
-
-                switch (choix.toString()) {
-                    case "CREATION":
-                    case "MODIFIER":
-                        if (err) {
-                            try {
+                    switch (choix.toString()) {
+                        case "CREATION":
+                        case "MODIFIER":
+                            if (err) {
                                 if (flageClient) {
-                                    int id = new DaoClient().save(ConnexionManager.conn(), client);
+                                    int id = new DaoClient().save( client);
                                     client.setId(id);
                                 } else {
-                                    int id = new DaoProspect().save(ConnexionManager.conn(), prospect);
+                                    int id = new DaoProspect().save( prospect);
                                     prospect.setId(id);
                                 }
-                            } catch (DaoSqlEx daoSqlEx) {
-                                err = false;
-                                messageErr("err basse de donne ", daoSqlEx.getMessage());
-                                LOGGER.info("err bd" + daoSqlEx.getMessage());
-
-                            }
-                            if (choix.toString().equals("CREATION")){
-                                affichageAccueilEtFermerLeEdit("vous avez bien cree");
-                            }else {
-                                affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
-                            }
-                        }
-                        break;
-                    case "SUPRIMER":
-                        int isSuprimer = JOptionPane.showConfirmDialog(null,
-                                "vous etes sur de SUPRIMER",
-                                "SUPRIMER", JOptionPane.YES_NO_OPTION);
-                        if (isSuprimer == 0) {
-                            try {
-                                if (flageClient) {
-                                    new DaoClient().delete(ConnexionManager.conn(), societe.getId());
+                                if (choix.toString().equals("CREATION")) {
+                                    affichageAccueilEtFermerLeEdit("vous avez bien cree");
                                 } else {
-                                    new DaoProspect().delete(ConnexionManager.conn(), societe.getId());
+                                    affichageAccueilEtFermerLeEdit("vous avez bien MODIFIER");
                                 }
-
-                            } catch (DaoSqlEx daoSqlEx) {
-                                err = false;
-                                LOGGER.info("err bd" + daoSqlEx.getMessage());
-                                messageErr("err basse de donne ", daoSqlEx.getMessage());
                             }
-                            applAccueil();
-                        }
-                        break;
+                            break;
+                        case "SUPRIMER":
+                            int isSuprimer = JOptionPane.showConfirmDialog(null,
+                                    "vous etes sur de SUPRIMER",
+                                    "SUPRIMER", JOptionPane.YES_NO_OPTION);
+                            if (isSuprimer == 0) {
+                                if (flageClient) {
+                                    new DaoClient().delete(idSociete);
+                                } else {
+                                    new DaoProspect().delete( idSociete);
+
+                                }
+                                applAccueil();
+                            }
+                            break;
+                    }
+                }catch (NumberFormatException n) {
+                    err = false;
+                    messageErr("message Err !!", "vous devez ecrir une chiiffre pour nomber employer " +
+                            "et chiffre daffire");
+                }  catch (DateTimeParseException dataFormatException) {
+                    err = false;
+                    messageErr("message Err !!", "mauvaise date!! ecrire un format de date comme dd/MM/yyyy");
+                }catch (ExceptionMetier ea) {
+                    err = false;
+                    messageErr("message Err !!", ea.getMessage());
+                } catch (DaoSqlEx daoSqlEx) {
+                    err = false;
+                    if (daoSqlEx.getGravite() != 5) {
+                        messageErr("err basse de donne ", daoSqlEx.getMessage());
+                    } else {
+                        messageErr("message Err !!", "err System BD on doit fermer l'App");
+                        LOGGER.fatal("err on ne pas prevu " + daoSqlEx.getMessage());
+                        System.exit(1);
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    err = false;
+                    messageErr("message Err !!", "err System essyeer puls tard");
+                    LOGGER.fatal("err on ne pas prevu" + exception.getMessage());
+                    System.exit(1);
                 }
             }
         });
 
 /**
-         * pour retoue a la page accueil
-         */
+ * pour retoue a la page accueil
+ */
 
         homeButton.addActionListener(new ActionListener() {
             @Override
@@ -259,7 +228,6 @@ public class PageManipulerDeList extends JFrame {
                 dispose();
                 Accueil accueil = new Accueil();
                 accueil.setVisible(true);
-                accueil.getListAficha().setVisible(false);
             }
         });
         sortirButton.addActionListener(new ActionListener() {
@@ -268,42 +236,59 @@ public class PageManipulerDeList extends JFrame {
                 System.exit(0);
             }
         });
+    }
 
+
+    /**
+     * instert objetc Societe qui vinne de bd accueil into TextFiled
+     *
+     * @param flageClient
+     * @param idSociete
+     */
+    //instert objetc Societe qui vinne de bd accueil into TextFiled
+    private void instertSocieteTextFiled(Boolean flageClient, Integer idSociete) {
+        Societe societe = null;
+        try {
+            if (flageClient) {
+                societe = new DaoClient().find(idSociete);
+                Client clientTxtFiled = ((Client) societe);
+                chiffreDaffaire.setText(Double.toString(clientTxtFiled.getLeChiffreDaffaire()));
+                nombreDeEmployes.setText(Long.toString(clientTxtFiled.getLeNombreDemployes()));
+            } else {
+                societe = new DaoProspect().find(idSociete);
+                Prospect prospectTxtFild = ((Prospect) societe);
+                date.setText(prospectTxtFild.getLaDateDeProspection().format(formatter));
+                interesseProspect.setSelectedItem(prospectTxtFild.getInteresse());
+            }
+            id.setText(String.valueOf(idSociete));
+            nomSociale.setText(societe.getSociale());
+            telephone.setText(societe.getTelephone());
+            cd.setText(societe.getAddress().getCodePostal());
+            email.setText(societe.getAdresseMail());
+            commentaire.setText(societe.getCommentaries());
+            numeroDeRue.setText(societe.getAddress().getNumeroDeRue());
+            NomDeRue.setText(societe.getAddress().getNumeroDeRue());
+            ville.setText(societe.getAddress().getVille());
+            modeIInfo.setVisible(true);
+            modeleAdress.setVisible(true);
+        } catch (DaoSqlEx e) {
+            if (e.getGravite() != 5) {
+                messageErr("err basse de donne ", e.getMessage());
+            } else {
+                messageErr("message Err !!", "err System on doit ferem l'App");
+                LOGGER.fatal("err on ne pas prevu" + e.getMessage());
+                System.exit(1);
+            }
+        } catch (Exception ex) {
+            LOGGER.fatal("err non prévue " + ex.getMessage());
+            messageErr("err non prévue", "on doit femer l'app");
+            System.exit(1);
+        }
 
     }
 
 
     /**
-     * instert objetc Societe qui vinne de page accueil into TextFiled
-     * @param flageClient
-     * @param societe
-     */
-
-    private void instertSocieteTextFiled(Boolean flageClient, Societe societe) {
-        id.setText(Integer.toString(societe.getId()));
-        nomSociale.setText(societe.getSociale());
-        telephone.setText(societe.getTelephone());
-        cd.setText(societe.getAddress().getCodePostal());
-        email.setText(societe.getAdresseMail());
-        commentaire.setText(societe.getCommentaries());
-        numeroDeRue.setText(societe.getAddress().getNumeroDeRue());
-        NomDeRue.setText(societe.getAddress().getNumeroDeRue());
-        ville.setText(societe.getAddress().getVille());
-        if (flageClient) {
-            Client client1 = ((Client) societe);
-            chiffreDaffaire.setText(Double.toString(client1.getLeChiffreDaffaire()));
-            nombreDeEmployes.setText(Long.toString(client1.getLeNombreDemployes()));
-        } else {
-            Prospect prospect1 = ((Prospect) societe);
-            date.setText(prospect1.getLaDateDeProspection().format(formatter));
-            interesseProspect.setSelectedItem(prospect1.getInteresse());
-        }
-        modeIInfo.setVisible(true);
-        modeleAdress.setVisible(true);
-    }
-
-
-/**
      * pour former la page édition et aller dans le page d'accueil
      * on pass en paramètre la message qu'on veut afficher
      *
@@ -323,7 +308,7 @@ public class PageManipulerDeList extends JFrame {
         dispose();
     }
 
-/**
+    /**
      * pour ne pas modifier les textes filde quand on est dans le cadre de suppression
      *
      * @param faux
@@ -345,7 +330,7 @@ public class PageManipulerDeList extends JFrame {
         interesseProspect.setEnabled(faux);
     }
 
-/**
+    /**
      * on affiche message de erreur
      *
      * @param titleBox
@@ -357,6 +342,7 @@ public class PageManipulerDeList extends JFrame {
                 messageErr,
                 titleBox, JOptionPane.DEFAULT_OPTION);
     }
+
     //get object For Edit
     private Societe getobjectForEdit(Boolean flageClient) {
         if (flageClient) {
@@ -364,5 +350,6 @@ public class PageManipulerDeList extends JFrame {
         }
         return prospect;
     }
+
 }
 
